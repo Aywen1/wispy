@@ -16,7 +16,7 @@ If there are promising or functional versions of my software developed by the co
 
 **Fork First**: Before diving into development, make sure to fork the repository.
 
-Want to be part of this fun journey? Join my [Discord server](https://discord.gg/btMFVBVG)! Look for the "AYWEN-LOGICIELS" category and the "#vos-projets" channel therein. You can create a sub-channel for your project under it.
+Want to be part of this fun journey? Join my [Discord server](https://discord.gg/QjWsuaM3aB)! Look for the "AYWEN-LOGICIELS" category and the "#vos-projets" channel therein. You can create a sub-channel for your project under it.
 
 ## 📃 License
 
