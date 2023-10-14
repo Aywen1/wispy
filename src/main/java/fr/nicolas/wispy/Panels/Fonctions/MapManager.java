@@ -27,7 +27,7 @@ public class MapManager
 	{
 		GameMap = new Map();
 		player.x = 0;
-		player.y = GameMap.getSafeSpawn(0);
+		player.y = GameMap.getSafeSpawn(32);
 	}
 
 	private Map generateMap(int num)

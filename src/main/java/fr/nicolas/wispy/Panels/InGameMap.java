@@ -39,7 +39,7 @@ public class InGameMap extends WPanel implements KeyListener, MouseListener, Mou
 		this.setFocusable(true);
 
 		sky = TextureManager.getTexture("map/sky.png");
-		player = new PlayerEntity(new Vector2D<Integer>(605, 315));
+		player = new PlayerEntity(new Vector2D<Integer>(605, 250));
 
 		// Cr�ation/Chargement nouveau monde
 		mapManager = new MapManager(player);
