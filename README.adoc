@@ -1,0 +1,34 @@
+= 🎮 SuperWispy
+
+Context : Wispy is a fork of https://github.com/aiwen1/wispy[Wispy by Aiwen]
+
+== 📜 Context of Super-Wispy
+
+SuperWispy is a fork of Wispy, a 2d Minecraft clone made by Aiwen when he was little.
+
+This fork improve the code, the assets and add a few new features.
+
+== 📜 Context of Wispy
+**This software has an important backstory!** I coded it when I was very young, and I haven't made any changes to it since then. Because of this:
+
+- It might not be compatible with the latest versions of Minecraft.
+- There could be errors or glitches.
+- The code might not be the best or the most efficient (little me has never taken a programming course).
+
+I decided to release this software as a part of a series on my YouTube channel https://www.youtube.com/@aywenvideos[Aywen] In the series, I explore and test the programs I coded during my childhood. The decision to release some of these programs is to give my community the chance to improve them and make them functional.
+
+If there are promising or functional versions of my software developed by the community, I'll be showcasing them in a video on my channel! 📽️
+
+== 🤝 Join the Development of Wispy
+
+**Fork First**: Before diving into development, make sure to fork the repository.
+
+Want to be part of this fun journey? Join my https://discord.gg/QjWsuaM3aB[Discord server]! Look for the "AYWEN-LOGICIELS" category and the "#vos-projets" channel therein. You can create a sub-channel for your project under it.
+
+== 📃 License
+
+Both Wispy and SuperWispy are released under the https://choosealicense.com/licenses/gpl-3.0/[GPL-3.0 license].
+
+'''
+
+Happy coding and gaming! 🎮👩‍💻
