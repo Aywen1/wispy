@@ -43,16 +43,16 @@ public class InputManager
     {
         switch (e.getKeyCode())
         {
-            case KeyEvent.VK_KP_UP -> {
+            case KeyEvent.VK_SPACE -> {
                 KEYS.UP.setPressed(false);
             }
-            case KeyEvent.VK_KP_DOWN -> {
+            case KeyEvent.VK_S -> {
                 KEYS.DOWN.setPressed(false);
             }
-            case KeyEvent.VK_KP_LEFT -> {
+            case KeyEvent.VK_Q -> {
                 KEYS.LEFT.setPressed(false);
             }
-            case KeyEvent.VK_KP_RIGHT -> {
+            case KeyEvent.VK_D -> {
                 KEYS.RIGHT.setPressed(false);
             }
             case KeyEvent.VK_ESCAPE -> {

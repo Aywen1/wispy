@@ -2,6 +2,14 @@
 
 Context : Wispy is a fork of https://github.com/aiwen1/wispy[Wispy by Aiwen]
 
+== 🎮 Credits :
+
+https://github.com/SomeBoringNerd[SomeBoringNerd : most of the modified code]
+
+https://github.com/Rubio-06[Rubio : Remade block textures]
+
+
+
 == 📜 Context of Super-Wispy
 
 SuperWispy is a fork of Wispy, a 2d Minecraft clone made by Aiwen when he was little.

@@ -57,25 +57,26 @@ public class InGameMap extends WPanel implements KeyListener, MouseListener, Mou
 		player.Update();
 	}
 
-	public void paintComponent(Graphics g) {
+	public void paintComponent(Graphics g)
+	{
 		g.drawImage(sky, 0, 0, this.getWidth(), this.getHeight(), null);
+
 		// Le paint des blocs int�gre le test de collision avec le joueur
-		mapManager.refreshPaintAllDisplayedBlocks(g, RefreshPaintMap.PAINT, this.getWidth(), this.getHeight(),
-				newBlockWidth, newBlockHeight, 0, 0, 0, 0, this, null);
+		mapManager.refreshPaintAllDisplayedBlocks(g, RefreshPaintMap.PAINT, null, mouseLocation);
+
 		player.Draw(g);
 
 		if (isEscapeMenuOpen) {
 			new EscapeMenu().paint(g, this.getHeight());
 		}
 
-		mapManager.refreshPaintAllDisplayedBlocks(g, RefreshPaintMap.SELECTION, this.getWidth(), this.getHeight(),
-				newBlockWidth, newBlockHeight, 0, 0, 0, 0, this, mouseLocation);
+		mapManager.refreshPaintAllDisplayedBlocks(g, RefreshPaintMap.SELECTION, null, mouseLocation);
 	}
 
 	public void setFrameBounds(Rectangle frameBounds) {
 		newBlockWidth = BLOCK_SIZE * (int) frameBounds.getWidth() / MainFrame.INIT_WIDTH;
 		newBlockHeight = BLOCK_SIZE * (int) frameBounds.getHeight() / MainFrame.INIT_HEIGHT;
-		playerX = 32 / InGameMap.BLOCK_SIZE * newBlockWidth;
+		playerX = newBlockWidth;
 		playerY = 64 / InGameMap.BLOCK_SIZE * newBlockHeight;
 		playerWidth = (int) player.getWidth() / InGameMap.BLOCK_SIZE * newBlockWidth;
 		playerHeight = (int) player.getHeight() / InGameMap.BLOCK_SIZE * newBlockHeight;

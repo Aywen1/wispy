@@ -20,7 +20,8 @@ public class Block implements Cloneable
         texture = TextureManager.getTexture(this.texturePath);
     }
 
-    public void paint(Graphics g, int newX, int newY, int newBlockWidth, int newBlockHeight) {
+    public void paint(Graphics g, int newX, int newY, int newBlockWidth, int newBlockHeight)
+    {
         g.drawImage(texture, position.x, position.y, 32, 32, null);
     }
 
@@ -29,8 +30,7 @@ public class Block implements Cloneable
     {
         try
         {
-            Block clone = (Block) super.clone();
-            return clone;
+            return (Block) super.clone();
         }
         catch (CloneNotSupportedException e)
         {
@@ -38,7 +38,7 @@ public class Block implements Cloneable
         }
     }
 
-    Vector2D<Integer> position;
+    Vector2D<Integer> position = new Vector2D<>(0, 0);
 
     public Block setPosition(int x, int y)
     {
