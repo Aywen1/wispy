@@ -40,4 +40,5 @@ artifacts/
 
 # Maven
 log/
-target/ 
+target/
+.gradle
