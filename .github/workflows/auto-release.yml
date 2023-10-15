@@ -29,7 +29,5 @@ jobs:
           automatic_release_tag: "latest"
           prerelease: false
           title: "[Automatique] Build du jeu"
-          files:
-            staging/linux.zip
-            staging/windows.zip
-            staging/macos.zip
+          files: | 
+            staging/*.zip
