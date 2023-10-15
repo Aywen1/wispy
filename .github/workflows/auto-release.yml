@@ -1,0 +1,35 @@
+name: Java CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Make buildscript executable
+        run: chmod +x ./build.sh
+      - name: build the game and pack it for all platforms
+        run: ./build.sh
+
+      - run: mkdir staging && cp production_build/linux.zip staging
+      - run: mkdir staging && cp production_build/windows.zip staging
+      - run: mkdir staging && cp production_build/macos.zip staging
+
+      - name: Release build
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: false
+          title: "[Automatique] Build du jeu"
+          files:
+            staging/linux.zip
+            staging/windows.zip
+            staging/macos.zip
