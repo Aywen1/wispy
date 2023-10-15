@@ -1,0 +1,8 @@
+{
+  "FirstRoom": "MainMenu",
+  "GameTitle": "SuperWispy",
+  "roomPackage": "xyz.someboringnerd.superwispy.rooms",
+  "mainClass": "xyz.someboringnerd.superwispy.Game",
+  "iconPath": "",
+  "skipLogo": false
+}

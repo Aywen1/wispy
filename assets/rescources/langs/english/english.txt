@@ -1,0 +1,3 @@
+debug.mainmenu.tile = RenderTestRoom
+debug.mainmenu.option1 = F5 : toggle debug cubes
+ch1.room.dialogue.bed = No time to sleep, we need to move !

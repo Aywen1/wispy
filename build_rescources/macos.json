@@ -1,0 +1,19 @@
+{
+    "platform": "mac",
+    "jdk": "build_rescources/jres/macos_jre.tar.gz",
+    "executable": "GameLauncher",
+    "classpath": [
+        "desktop/build/libs/SuperWispy.jar"
+    ],
+    "removelibs": [
+    ],
+    "mainclass": "xyz.someboringnerd.game.DesktopLauncher",
+    "vmargs": [
+       "Xmx1G"
+    ],
+    "resources": [
+        "./audio"
+    ],
+    "minimizejre": "soft",
+    "output": "out-mac"
+}

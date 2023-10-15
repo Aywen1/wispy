@@ -1,2 +1,1 @@
-rootProject.name = 'Super_Wispy'
-
+include 'desktop', 'core'

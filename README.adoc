@@ -1,6 +1,6 @@
 = 🎮 SuperWispy
 
-Context : Wispy is a fork of https://github.com/aiwen1/wispy[Wispy by Aiwen]
+Context : SuperWispy is a port of https://github.com/aiwen1/wispy[Wispy by Aywen] to Transcendance
 
 == 🎮 Credits :
 

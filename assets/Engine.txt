@@ -1,0 +1,7 @@
+Transcendance is a POLYvalant, TRANScending game engine that is more or less an abstraction layer to LibGDX, and allow you to ACE your projects.
+
+The engine itself is free and open source, but you are free to use the engine for anything as long as :
+
+>you dont rebrand it and make people pay for it
+>disclose that you use Transcendance in your project
+>that your project respect the licence of the engine, and the libraries used
