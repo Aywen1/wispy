@@ -1,5 +1,6 @@
 package xyz.someboringnerd.superwispy.entities;
 
+import box2dLight.DirectionalLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
@@ -15,6 +16,7 @@ import net.npcinteractive.TranscendanceEngine.Entity.Entity;
 import net.npcinteractive.TranscendanceEngine.Managers.FileManager;
 import net.npcinteractive.TranscendanceEngine.Managers.InputSystem;
 import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
+import xyz.someboringnerd.superwispy.util.DIRECTION;
 
 import static net.npcinteractive.TranscendanceEngine.Entity.Entity.HEIGHT;
 import static net.npcinteractive.TranscendanceEngine.Entity.Entity.WIDTH;
@@ -26,6 +28,8 @@ public class PlayerEntity extends Entity
     private static PlayerEntity instance;
 
     private Texture player;
+
+    public DIRECTION direction;
 
     public PlayerEntity(Vector2 position)
     {
@@ -65,10 +69,12 @@ public class PlayerEntity extends Entity
         if(InputSystem.moveLeft())
         {
             movement.x -= 64;
+            direction = DIRECTION.LEFT;
         }
         if(InputSystem.moveRight())
         {
             movement.x += 64;
+            direction = DIRECTION.RIGHT;
         }
         if(InputSystem.justMoveUp() && (int)body.getLinearVelocity().y == 0)
         {
@@ -91,9 +97,9 @@ public class PlayerEntity extends Entity
         setPosition(body.getPosition().x - 16, body.getPosition().y - 32);
         boundingBox.set(getX(), getY(), getWidth(), getHeight());
 
-        batch.draw(player, getX(), getY(), 32, 64);
-        RenderUtil.DrawText(batch, "X : " + getX(), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 32), RenderUtil.Deter30px);
-        RenderUtil.DrawText(batch, "Y : " + getY(), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 64), RenderUtil.Deter30px);
-        RenderUtil.DrawText(batch, "vY : " + body.getLinearVelocity().y, new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 96), RenderUtil.Deter30px);
+        batch.draw(player, direction == DIRECTION.LEFT ? getX() + 32 : getX(), getY(), direction == DIRECTION.LEFT ? -32 : 32, 64);
+        RenderUtil.DrawText(batch, "X : " + (getX() / 32), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 32), RenderUtil.Deter30px);
+        RenderUtil.DrawText(batch, "Y : " + (getY() / 32), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 64), RenderUtil.Deter30px);
+        RenderUtil.DrawText(batch, "vY : " + (body.getLinearVelocity().y / 32), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 96), RenderUtil.Deter30px);
     }
 }

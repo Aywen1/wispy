@@ -26,11 +26,13 @@ public class Tile extends Actor implements Cloneable
 
     public Tile(String texture, Vector2 position, Vector2 scale)
     {
+
         this.texture = MiscUtil.addIfAbsent(texture, ".png");
         setPosition(position.x, position.y);
         setScale(scale.x, scale.y);
         setZIndex(0);
-        _texture = FileManager.getTexture("tiles/" + texture);
+        if(Thread.currentThread().getId() == 1)
+            _texture = FileManager.getTexture("tiles/" + texture);
         setName(texture);
     }
 
@@ -42,10 +44,12 @@ public class Tile extends Actor implements Cloneable
         setPosition(position.x, position.y);
         setScale(scale.x, scale.y);
         setZIndex(0);
-        _texture = FileManager.getTexture("tiles/" + texture);
+        if(Thread.currentThread().getId() == 1)
+            _texture = FileManager.getTexture("tiles/" + texture);
 
         setName(texture);
-        _shader = new Shader(shader);
+        if(Thread.currentThread().getId() == 1)
+            _shader = new Shader(shader);
     }
 
     public Tile AddCollider(DebugCube debug)
@@ -66,9 +70,16 @@ public class Tile extends Actor implements Cloneable
 
     boolean invert = false;
 
+    boolean init;
+
     @Override
     public void draw(Batch batch, float parentAlpha)
     {
+        if(Thread.currentThread().getId() == 1 && _texture == null)
+        {
+            _texture = FileManager.getTexture("tiles/" + texture);
+        }
+
         boundingBox = new Rectangle(getX(), 720 + getY(), getWidth(), getHeight());
         if(cube != null)
         {

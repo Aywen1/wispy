@@ -20,14 +20,9 @@ public class Block extends Tile
     public Block(String texture, Vector2 position)
     {
         super(texture, position, new Vector2(32, 32));
+
         this.position = position;
 
         AddCollider(new DebugCube(Color.BLACK, this.position, new Vector2(32, 32)));
-    }
-
-    @Override
-    public void draw(Batch batch, float parentAlpha)
-    {
-        batch.draw(this.get_texture(), position.x, position.y, 32, 32);
     }
 }

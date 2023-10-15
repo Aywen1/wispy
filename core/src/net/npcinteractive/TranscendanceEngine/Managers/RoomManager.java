@@ -1,5 +1,6 @@
 package net.npcinteractive.TranscendanceEngine.Managers;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
@@ -23,6 +24,7 @@ import net.npcinteractive.TranscendanceEngine.Util.GlobalVariables;
 import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
 
 import org.reflections.Reflections;
+import xyz.someboringnerd.superwispy.content.Chunk;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -35,6 +37,9 @@ public class RoomManager
     @Getter(AccessLevel.PUBLIC)
     private static AbstractRoom loaded;
     public static World world;
+
+    @Getter(AccessLevel.PUBLIC)
+    RayHandler handler;
 
     @DontSave
     public static String previousRoom;
@@ -68,6 +73,8 @@ public class RoomManager
     }
 
     Box2DDebugRenderer debugRenderer;
+
+
 
     @EventHandler
     public void RenderGame(GameRenderEvent event)

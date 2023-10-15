@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import meteordevelopment.orbit.EventHandler;
+import net.npcinteractive.TranscendanceEngine.Events.GameRenderEvent;
 import net.npcinteractive.TranscendanceEngine.Exceptions.NoInteractionForRoom;
 import net.npcinteractive.TranscendanceEngine.Managers.EventManager;
 import net.npcinteractive.TranscendanceEngine.Misc.AbstractRoom;
@@ -32,7 +33,8 @@ public class DebugCube extends Tile
 
         setName("DebugCube-" + color);
         boundingBox = new Rectangle(getX(), getY(), getScaleX(), getScaleY());
-        createBody(RoomManager.world);
+        if(!shouldInitLater)
+            createBody(RoomManager.world);
     }
 
     public DebugCube setObjectName(String name)
@@ -40,6 +42,8 @@ public class DebugCube extends Tile
         setName(name);
         return this;
     }
+
+    public boolean shouldInitLater = !(Thread.currentThread().getId() == 1);
 
     public DebugCube(Color color, Vector2 position, Vector2 scale)
     {
@@ -49,7 +53,8 @@ public class DebugCube extends Tile
 
         setName("DebugCube-" + color);
         boundingBox = new Rectangle(getX(), getY(), getScaleX(), getScaleY());
-        createBody(RoomManager.world);
+        if(!shouldInitLater)
+            createBody(RoomManager.world);
     }
 
     public DebugCube(Color color, Vector2 position, Vector2 scale, String name)
@@ -60,7 +65,8 @@ public class DebugCube extends Tile
 
         setName(name);
         boundingBox = new Rectangle(getX(), getY(), getScaleX(), getScaleY());
-        createBody(RoomManager.world);
+        if(!shouldInitLater)
+            createBody(RoomManager.world);
     }
 
     IInteractible iInteractible;
@@ -93,7 +99,7 @@ public class DebugCube extends Tile
         }
     }
 
-    private void createBody(World world)
+    public void createBody(World world)
     {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody; // Change to dynamic if needed
@@ -110,6 +116,7 @@ public class DebugCube extends Tile
 
         body.createFixture(fixtureDef);
         shape.dispose();
+        shouldInitLater = false;
     }
 
     @Override
@@ -117,11 +124,5 @@ public class DebugCube extends Tile
     {
         LogManager.print("Destroying self");
         RoomManager.world.destroyBody(body);
-    }
-
-    @Override
-    public void draw(Batch batch, float parentAlpha)
-    {
-        body.getPosition().set(getX(), getY());
     }
 }
