@@ -1,6 +1,12 @@
+clear
+
 ./gradlew desktop:dist
 
-mv desktop/build/libs/desktop-1.0.jar desktop/build/libs/ThroughTheGame.jar
+if [ $? -ne 0 ]; then
+  exit 1
+fi
+
+mv desktop/build/libs/desktop-1.0.jar desktop/build/libs/SuperWispy.jar
 
 rm -rf production_build
 mkdir production_build
