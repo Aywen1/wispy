@@ -15,18 +15,20 @@ import net.npcinteractive.TranscendanceEngine.Events.ReceiveRaycastEvent;
 import net.npcinteractive.TranscendanceEngine.Managers.LogManager;
 import net.npcinteractive.TranscendanceEngine.Managers.RoomManager;
 import net.npcinteractive.TranscendanceEngine.Util.COLLIDER_TYPE;
+import xyz.someboringnerd.superwispy.content.Chunk;
+import xyz.someboringnerd.superwispy.managers.BlockManager;
 
 public class DebugCube extends Tile
 {
     Color color;
     public COLLIDER_TYPE type;
-    private Body body;
+    public Body body;
 
     private AbstractRoom loaded;
 
-    public DebugCube(Color color, Vector2 position, Vector2 scale, COLLIDER_TYPE type)
+    public DebugCube(Color color, Vector2 position, Vector2 scale, COLLIDER_TYPE type, Chunk chunk)
     {
-        super("EmptyCube", position, scale);
+        super(BlockManager.registeredBlocks.get(0), position, scale, 0, chunk);
 
         this.color = color;
         this.type = type;
@@ -44,30 +46,6 @@ public class DebugCube extends Tile
     }
 
     public boolean shouldInitLater = !(Thread.currentThread().getId() == 1);
-
-    public DebugCube(Color color, Vector2 position, Vector2 scale)
-    {
-        super("EmptyCube", position, scale);
-        this.color = color;
-        this.type = COLLIDER_TYPE.NONE;
-
-        setName("DebugCube-" + color);
-        boundingBox = new Rectangle(getX(), getY(), getScaleX(), getScaleY());
-        if(!shouldInitLater)
-            createBody(RoomManager.world);
-    }
-
-    public DebugCube(Color color, Vector2 position, Vector2 scale, String name)
-    {
-        super("EmptyCube", position, scale);
-        this.color = color;
-        this.type = COLLIDER_TYPE.NONE;
-
-        setName(name);
-        boundingBox = new Rectangle(getX(), getY(), getScaleX(), getScaleY());
-        if(!shouldInitLater)
-            createBody(RoomManager.world);
-    }
 
     IInteractible iInteractible;
     public int interactionID;
@@ -101,17 +79,29 @@ public class DebugCube extends Tile
 
     public void createBody(World world)
     {
+        if(getX() % 16 != 0 && getY() % 16 != 0) {
+            LogManager.print("Refused to create a collider for a block not on the scale");
+            return;
+        }
+
+        if(body != null) {
+            body = null;
+        }
+
         BodyDef bodyDef = new BodyDef();
+
         bodyDef.type = BodyDef.BodyType.StaticBody; // Change to dynamic if needed
+
         bodyDef.position.set(getX() + (getScaleX() / 2), (getScaleY() / 2) + getY());
 
         body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
+
         shape.setAsBox(getScaleX() / 2, getScaleY() / 2);
 
-
         FixtureDef fixtureDef = new FixtureDef();
+
         fixtureDef.shape = shape;
 
         body.createFixture(fixtureDef);

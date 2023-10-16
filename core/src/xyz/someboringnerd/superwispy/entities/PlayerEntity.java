@@ -5,17 +5,19 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.npcinteractive.TranscendanceEngine.Entity.Entity;
 import net.npcinteractive.TranscendanceEngine.Managers.FileManager;
 import net.npcinteractive.TranscendanceEngine.Managers.InputSystem;
+import net.npcinteractive.TranscendanceEngine.Managers.LogManager;
+import net.npcinteractive.TranscendanceEngine.Managers.RoomManager;
 import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
+import xyz.someboringnerd.superwispy.rooms.GameRoom;
 import xyz.someboringnerd.superwispy.util.DIRECTION;
 
 import static net.npcinteractive.TranscendanceEngine.Entity.Entity.HEIGHT;
@@ -26,6 +28,9 @@ public class PlayerEntity extends Entity
 {
     @Getter(AccessLevel.PUBLIC)
     private static PlayerEntity instance;
+
+    final static float MAX_VELOCITY = 256f;
+    final static float JUMP_VELOCITY = 128f;
 
     private Texture player;
 
@@ -42,64 +47,106 @@ public class PlayerEntity extends Entity
 
     void CreateBody()
     {
+        // complètement copié collé de la documentation mdr
+        // - SBN
+
+        // First we create a body definition
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody; // Make sure to adjust the body type as needed
+// We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+// Set our body's starting position in the world
         bodyDef.position.set(getX(), getY());
+
+// Create our body in the world using our body definition
         body = world.createBody(bodyDef);
 
-        // Define the player's shape (assuming a rectangular shape)
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(15, 32); // Half width and half height
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.friction = 0;
-        fixtureDef.density = 0.5f;
-        body.createFixture(fixtureDef);
-        shape.dispose();
+// Create a circle shape and set its radius to 6
+        CircleShape circle = new CircleShape();
+        circle.setRadius(16);
 
+// Create a fixture definition to apply our shape to
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = circle;
+        Fixture fixture = body.createFixture(fixtureDef);
+
+        circle.dispose();
         boundingBox = new Rectangle();
     }
 
-    Vector2 move;
+    int frameStill;
+    float previousX;
 
-    Vector2 moveSprite()
-    {
-        Vector2 movement = new Vector2(0, 0);
+    int yJump;
 
-        if(InputSystem.moveLeft())
-        {
-            movement.x -= 64;
-            direction = DIRECTION.LEFT;
-        }
-        if(InputSystem.moveRight())
-        {
-            movement.x += 64;
-            direction = DIRECTION.RIGHT;
-        }
-        if(InputSystem.justMoveUp() && (int)body.getLinearVelocity().y == 0)
-        {
-            float jumpForce = (float) (80 * 8 * 32 * 10) / 2;
-            body.applyLinearImpulse(new Vector2(0, jumpForce), body.getPosition(), true);
-        }
-
-        return movement;
-    }
+    boolean previouslyInput;
 
     @Override
     public void draw(Batch batch, float parentAlpha)
     {
 
-        move = moveSprite();
+        Vector2 vel = body.getLinearVelocity();
+        Vector2 pos = body.getPosition();
 
-        body.setLinearVelocity(move.x, body.getLinearVelocity().y);
+        float movement = 0.5f;
+
+        if (Math.abs(vel.x) > MAX_VELOCITY) {
+            vel.x = Math.signum(vel.x) * MAX_VELOCITY;
+            body.setLinearVelocity(vel.x, vel.y);
+        }
+
+        if (!InputSystem.moveLeft() && !InputSystem.moveRight())
+        {
+            body.setLinearVelocity(vel.x * 0.7f, vel.y);
+        }
+
+        if (InputSystem.moveLeft() && vel.x > -MAX_VELOCITY)
+        {
+            direction = DIRECTION.LEFT;
+            body.setLinearVelocity(-(128 * movement), body.getLinearVelocity().y);
+        }
+
+        if (InputSystem.justMoveUp() && body.getLinearVelocity().y == 0)
+        {
+            yJump = (int)pos.y;
+            LogManager.print("Jumped at y = "+ yJump);
+            body.setLinearVelocity(vel.x, vel.y);
+            body.setTransform(pos.x, pos.y, 0);
+            body.applyLinearImpulse(0, (JUMP_VELOCITY*JUMP_VELOCITY*JUMP_VELOCITY) * 1.5f, 0, pos.y, true);
+        }
+
+        if (InputSystem.moveRight() && vel.x < MAX_VELOCITY)
+        {
+            direction = DIRECTION.RIGHT;
+            body.setLinearVelocity(128 * movement, body.getLinearVelocity().y);
+        }
+        //LogManager.print(yJump + " " + (int)pos.y + " " + (previousX == pos.x) + " " + ((pos.y - (int)pos.y) > 0.016f) + " " +  ((yJump / 32) == (int)(pos.y / 32)));
+
+        if(previousX == pos.x && ((yJump / 32) == (int)(pos.y / 32)))
+        {
+            body.setLinearVelocity(0, body.getLinearVelocity().y);
+        }
+        else
+        {
+            body.setLinearVelocity(body.getLinearVelocity().x, body.getLinearVelocity().y);
+        }
+
         body.setFixedRotation(true);
 
-        setPosition(body.getPosition().x - 16, body.getPosition().y - 32);
+        setPosition(body.getPosition().x - 16, body.getPosition().y - 16);
         boundingBox.set(getX(), getY(), getWidth(), getHeight());
 
+        previousX = pos.x;
+
         batch.draw(player, direction == DIRECTION.LEFT ? getX() + 32 : getX(), getY(), direction == DIRECTION.LEFT ? -32 : 32, 64);
+
         RenderUtil.DrawText(batch, "X : " + (getX() / 32), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 32), RenderUtil.Deter30px);
         RenderUtil.DrawText(batch, "Y : " + (getY() / 32), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 64), RenderUtil.Deter30px);
-        RenderUtil.DrawText(batch, "vY : " + (body.getLinearVelocity().y / 32), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 96), RenderUtil.Deter30px);
+
+        RenderUtil.DrawText(batch, "vY : " + (body.getLinearVelocity().y), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 96), RenderUtil.Deter30px);
+        RenderUtil.DrawText(batch, "vX : " + (body.getLinearVelocity().x), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 128), RenderUtil.Deter30px);
+
+        RenderUtil.DrawText(batch, "FPS : " + Gdx.graphics.getFramesPerSecond() , new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - (128 + 32)), RenderUtil.Deter30px);
+        RenderUtil.DrawText(batch, "Chunks loaded : " + GameRoom.getInstance().safeLoaded().size(), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - (128 + 64)), RenderUtil.Deter30px);
+        RenderUtil.DrawText(batch, "total chunks : " + GameRoom.getInstance().chunklist.size(), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - (128 + 96)), RenderUtil.Deter30px);
     }
 }

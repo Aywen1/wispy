@@ -16,7 +16,7 @@ public class MainMenu extends AbstractRoom
 {
     @Override
     public String roomMusic() {
-        return "null";
+        return "mainmenu";
     }
 
     @Override
@@ -24,7 +24,7 @@ public class MainMenu extends AbstractRoom
         return new Vector2(1280, 720);
     }
 
-    public Button QuitButton, PlayButton;
+    public Button QuitButton, PlayButton, CreditButton;
 
     @Override
     public void initInteractions() {
@@ -58,7 +58,19 @@ public class MainMenu extends AbstractRoom
                 new Vector2(300, 100)
         );
 
-        tiles.add(new Tile("bg", new Vector2(RenderUtil.getXRelativeZero(), RenderUtil.getYRelativeZero() - 720), new Vector2(1280, 720)));
+        CreditButton = new Button(new IInteractible()
+        {
+            @Override
+            public void onInteract(int id) throws NoInteractionForRoom
+            {
+                RoomManager.LoadRoom("CreditScreen");
+            }
+        }, "Credits",
+                new Vector2(RenderUtil.getXRelativeZero() + 1280 / 2 - 150, RenderUtil.getYRelativeZero() - 500),
+                new Vector2(300, 100)
+        );
+
+        tiles.add(new Tile("tiles/bg", new Vector2(RenderUtil.getXRelativeZero(), RenderUtil.getYRelativeZero() - 720), new Vector2(1280, 720)));
     }
 
     @Override
@@ -71,6 +83,7 @@ public class MainMenu extends AbstractRoom
 
         QuitButton.Draw(batch, mousePosition);
         PlayButton.Draw(batch, mousePosition);
+        CreditButton.Draw(batch, mousePosition);
         RenderUtil.DrawText(batch, "SuperWispy", new Vector2(RenderUtil.getXRelativeZero() + 1280 / 2 - RenderUtil.getStringWidth("SuperWispy", RenderUtil.Deter72px) / 2, RenderUtil.getYRelativeZero() - 80), RenderUtil.Deter72px);
     }
 }

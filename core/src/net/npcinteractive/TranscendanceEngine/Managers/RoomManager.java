@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import meteordevelopment.orbit.EventHandler;
@@ -46,7 +47,7 @@ public class RoomManager
 
     public RoomManager()
     {
-        world = new World(new Vector2(0, -64), true);
+        world = new World(new Vector2(0, -(96*2)), true);
 
         rooms.add(new ErrorRoom());
         rooms.add(new LogoRoom());
@@ -74,19 +75,15 @@ public class RoomManager
 
     Box2DDebugRenderer debugRenderer;
 
-
-
     @EventHandler
     public void RenderGame(GameRenderEvent event)
     {
         if (loaded == null) return;
-        world.step(1/60f, 6, 2);
-
         // Clear the screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Render all actors
+
         loaded.preRender(event.getBatch());
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.F5))

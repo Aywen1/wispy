@@ -33,24 +33,6 @@ public abstract class Entity extends Actor
         
         textures[0] = FileManager.getTexture(path);
         setPosition(initialPosition.x, initialPosition.y);
-
-        setPosition(initialPosition.x, initialPosition.y);
-        setZIndex(1);
-        region = new TextureRegion(textures[0]);
-
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody; // Make sure to adjust the body type as needed
-        bodyDef.position.set(initialPosition.x + (WIDTH / 2), initialPosition.y);
-        body = world.createBody(bodyDef);
-
-        // Define the player's shape (assuming a rectangular shape)
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(WIDTH / 4, 16); // Half width and half height
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f; // Set density as needed
-        body.createFixture(fixtureDef);
-        shape.dispose();
     }
 
     public void Init(AbstractRoom room, Vector2 position, DIRECTION direction)

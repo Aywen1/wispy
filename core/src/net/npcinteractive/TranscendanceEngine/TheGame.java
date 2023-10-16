@@ -2,10 +2,12 @@ package net.npcinteractive.TranscendanceEngine;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.kotcrab.vis.ui.VisUI;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -131,9 +133,13 @@ public class TheGame extends ApplicationAdapter
 		EventManager.getInstance().FireEvent(WindowResizeEvent.post(new Vector2(width, height)), EVENT_SIDE.BOTH);
 	}
 
+	FPSLogger fpsLogger = new FPSLogger(55);
+
 	@Override
 	public void render()
 	{
+		RoomManager.world.step(1 / 60f, 10, 10);
+
 		batch.setProjectionMatrix(RenderUtil.camera.combined);
 		ScreenUtils.clear(0, 0, 0, 1);
 		batch.begin();
@@ -168,9 +174,8 @@ public class TheGame extends ApplicationAdapter
 				shouldFade = false;
 			}
 		}
-
-		RoomManager.world.step(1 / 60f, 6, 2);
 		RenderUtil.getViewport().getCamera().update();
+		RoomManager.world.step(1 / 60f, 10, 10);
 	}
 	
 	@Override

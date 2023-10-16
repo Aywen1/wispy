@@ -68,107 +68,18 @@ public abstract class AbstractRoom
         GlobalVariables.RenderLights = !lights.isEmpty();
 
 
-
-        AddActors(loadTiles());
+        if(loadTiles() != null)
+            AddActors(loadTiles());
     }
 
     public Tile[] loadTiles()
     {
         if(!Gdx.files.internal("rescources/maps/" + getName() + ".json").exists())
         {
-            List<Tile> error = new ArrayList<>();
-            error.add(new Tile("missing", new Vector2(0, 0), new Vector2(0, 0)));
-            LogManager.print("The room.json file associated to " + getName() + " was not found, returning an empty array");
-            return error.toArray(new Tile[0]);
+            return null;
         }
 
-        FileHandle jsonFile = Gdx.files.internal("rescources/maps/" + getName() + ".json");
-
-        String stringifiedJson = jsonFile.readString();
-
-        try
-        {
-            JSONObject jsonObject = new JSONObject(stringifiedJson);
-            JSONObject innerJsonObject = jsonObject.getJSONObject("tiles");
-
-            List<Tile> stringList = new ArrayList<>();
-
-            int i = 0;
-            while (innerJsonObject.has(String.valueOf(i))) 
-            {
-                String texture = innerJsonObject.getJSONObject(String.valueOf(i)).getString("texture");
-                boolean collider = innerJsonObject.getJSONObject(String.valueOf(i)).getBoolean("collider");
-                boolean castLight = false;
-                if(innerJsonObject.getJSONObject(String.valueOf(i)).has("castLight")){
-                    castLight = innerJsonObject.getJSONObject(String.valueOf(i)).getBoolean("castLight");
-                }
-                int posX = innerJsonObject.getJSONObject(String.valueOf(i)).getInt("posX");
-                int posY = innerJsonObject.getJSONObject(String.valueOf(i)).getInt("posY");
-                int scaleX = innerJsonObject.getJSONObject(String.valueOf(i)).getInt("scaleX");
-                int scaleY = innerJsonObject.getJSONObject(String.valueOf(i)).getInt("scaleY");
-                int cScaleX = innerJsonObject.getJSONObject(String.valueOf(i)).getInt("cScaleX");
-                int cScaleY = innerJsonObject.getJSONObject(String.valueOf(i)).getInt("cScaleY");
-                int interactionID = innerJsonObject.getJSONObject(String.valueOf(i)).getInt("interactionID");
-
-
-                Tile t = new Tile(texture,
-                        new Vector2(posX, posY),
-                        new Vector2(scaleX, scaleY)
-                );
-                
-                if(collider)
-                {
-                    if(!castLight) {
-                        t.AddCollider(new DebugCube(Color.RED,
-                                new Vector2(posX, -posY),
-                                new Vector2(cScaleX, cScaleY)
-                        ));
-                    }else{
-                        t.AddCollider(new DebugCube(Color.RED,
-                                new Vector2(posX, -posY),
-                                new Vector2(cScaleX, cScaleY),
-                                "wall"
-                        ));
-                    }
-
-                    if(interactionID != 0)
-                    {
-                        t.cube.AddInteraction(interaction, interactionID);
-                    }
-                }
-                stringList.add(t);
-                i++;
-            }
-            i = 0;
-            if(jsonObject.has("walls"))
-            {
-                JSONObject wall = jsonObject.getJSONObject("walls");
-
-                while (wall.has(String.valueOf(i)))
-                {
-                    int posX = wall.getJSONObject(String.valueOf(i)).getInt("posX");
-                    int posY = wall.getJSONObject(String.valueOf(i)).getInt("posY");
-                    int scaleX = wall.getJSONObject(String.valueOf(i)).getInt("scaleX");
-                    int scaleY = wall.getJSONObject(String.valueOf(i)).getInt("scaleY");
-
-                    new DebugCube(Color.RED,
-                            new Vector2(posX, -posY),
-                            new Vector2(scaleX, scaleY),
-                            "wall"
-                    );
-                    i++;
-                }
-            }
-
-            return stringList.toArray(new Tile[0]);
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-            List<Tile> error = new ArrayList<>();
-            error.add(new Tile("missing", new Vector2(0, 0), new Vector2(0, 0)));
-            return error.toArray(new Tile[0]);
-        }
+        return null;
     }
 
     /**
