@@ -1,5 +1,3 @@
-clear
-
 ./gradlew desktop:dist
 
 if [ $? -ne 0 ]; then
