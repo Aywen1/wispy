@@ -10,14 +10,12 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.TimeUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import meteordevelopment.orbit.EventHandler;
 import net.npcinteractive.TranscendanceEngine.TheGame;
 import net.npcinteractive.TranscendanceEngine.Events.GameRenderEvent;
 import net.npcinteractive.TranscendanceEngine.Interfaces.DontSave;
-import net.npcinteractive.TranscendanceEngine.Map.TileManager;
 import net.npcinteractive.TranscendanceEngine.Misc.AbstractRoom;
 import net.npcinteractive.TranscendanceEngine.Misc.ErrorRoom;
 import net.npcinteractive.TranscendanceEngine.Misc.LogoRoom;
@@ -25,7 +23,6 @@ import net.npcinteractive.TranscendanceEngine.Util.GlobalVariables;
 import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
 
 import org.reflections.Reflections;
-import xyz.someboringnerd.superwispy.content.Chunk;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -69,8 +66,6 @@ public class RoomManager
         debugRenderer = new Box2DDebugRenderer();
 
         LoadRoom("LogoRoom", true);
-
-        new TileManager();
     }
 
     Box2DDebugRenderer debugRenderer;

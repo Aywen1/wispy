@@ -1,26 +1,20 @@
 package xyz.someboringnerd.superwispy.content;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.PerformanceCounter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.npcinteractive.TranscendanceEngine.Managers.AudioManager;
 import net.npcinteractive.TranscendanceEngine.Managers.LogManager;
 import net.npcinteractive.TranscendanceEngine.Managers.RoomManager;
-import net.npcinteractive.TranscendanceEngine.Map.DebugCube;
 import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
 import xyz.someboringnerd.superwispy.GlobalData;
 import xyz.someboringnerd.superwispy.content.structures.Tree;
-import xyz.someboringnerd.superwispy.entities.PlayerEntity;
 import xyz.someboringnerd.superwispy.managers.BlockManager;
 import xyz.someboringnerd.superwispy.rooms.GameRoom;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -93,7 +87,7 @@ public class Chunk extends Thread
                 {
                     for(int y = 0; y < 256; y++)
                     {
-                        blockList[x][y] = new Block(new Vector2(x, y), 0, instance);
+                        blockList[x][y] = BlockManager.getBlockFromID(new Vector2(x, y), 0, instance);
                     }
                 }
 
@@ -155,20 +149,20 @@ public class Chunk extends Thread
                     int realX = (generateRight ? i : 15 - i);
 
 
-                    blockList[realX][y] = (new Block(new Vector2(realX, y), 1, instance));
+                    blockList[realX][y] = (BlockManager.getBlockFromID(new Vector2(realX, y), 1, instance));
 
                     for(int j = y - 1; j >= 0; j--)
                     {
                         if(j >= y - 3)
                         {
-                            blockList[realX][j] = (new Block(new Vector2(realX, j), 2, instance));
+                            blockList[realX][j] = (BlockManager.getBlockFromID(new Vector2(realX, j), 2, instance));
                         }
                         else if(j == 0)
                         {
-                            blockList[realX][j] = (new Block(new Vector2(realX, j), 6, instance));
+                            blockList[realX][j] = (BlockManager.getBlockFromID(new Vector2(realX, j), 6, instance));
                         }
                         else{
-                            blockList[realX][j] = (new Block(new Vector2(realX, j), 3, instance));
+                            blockList[realX][j] = (BlockManager.getBlockFromID(new Vector2(realX, j), 3, instance));
                         }
                     }
 
@@ -184,7 +178,7 @@ public class Chunk extends Thread
                             {
                                 if(tree.content[x][_y] != 0)
                                 {
-                                    blockList[i + x][tempY + _y] = new Block(new Vector2(i + x, tempY + _y), tree.content[x][_y], instance);
+                                    blockList[i + x][tempY + _y] = BlockManager.getBlockFromID(new Vector2(i + x, tempY + _y), tree.content[x][_y], instance);
                                 }
                             }
                         }
@@ -222,7 +216,7 @@ public class Chunk extends Thread
                 }
                 if (hasVisibleSide(block.getChunkPosition()))
                 {
-                    if (block.getId() != 0)
+                    if (block.hasCollision())
                     {
                         block.createBody(RoomManager.world);
                     }
@@ -241,10 +235,10 @@ public class Chunk extends Thread
                     blockList[(int) (chunkPosition.x + 1)][(int) chunkPosition.y] == null ||
                     blockList[(int) (chunkPosition.x)][(int) chunkPosition.y + 1] == null ||
                     blockList[(int) (chunkPosition.x)][(int) chunkPosition.y - 1] == null ||
-                    blockList[(int) (chunkPosition.x - 1)][(int) chunkPosition.y].getId() == 0 ||
-                    blockList[(int) (chunkPosition.x + 1)][(int) chunkPosition.y].getId() == 0 ||
-                    blockList[(int) (chunkPosition.x)][(int) chunkPosition.y + 1].getId() == 0 ||
-                    blockList[(int) (chunkPosition.x)][(int) chunkPosition.y - 1].getId() == 0;
+                    !blockList[(int) (chunkPosition.x - 1)][(int) chunkPosition.y].hasCollision() ||
+                    !blockList[(int) (chunkPosition.x + 1)][(int) chunkPosition.y].hasCollision() ||
+                    !blockList[(int) (chunkPosition.x)][(int) chunkPosition.y + 1].hasCollision() ||
+                    !blockList[(int) (chunkPosition.x)][(int) chunkPosition.y - 1].hasCollision();
 
         }
         catch (ArrayIndexOutOfBoundsException e)
@@ -274,6 +268,9 @@ public class Chunk extends Thread
     {
         try
         {
+            if((int) (blockCoordinate.x / 32 - offset) < 0 || (int) (blockCoordinate.x / 32 - offset) > 15){
+                return null;
+            }
             return blockList[(int) (blockCoordinate.x / 32 - offset)][(int) (blockCoordinate.y / 32)] != null ? blockList[(int) (blockCoordinate.x / 32)][(int) (blockCoordinate.y / 32)] : null;
         }
         catch (ArrayIndexOutOfBoundsException e)
@@ -313,6 +310,7 @@ public class Chunk extends Thread
                 else
                 {
                     block.draw(batch, 1.0f);
+                    block.RandomTick();
                 }
             }
         }
@@ -332,7 +330,7 @@ public class Chunk extends Thread
                             if (blockList[(int) block.getChunkPosition().x][(int) block.getChunkPosition().y] != null)
                             {
                                 AudioManager.getInstance().playAudio("sfx/explosion");
-                                blockList[(int) block.getChunkPosition().x][(int) block.getChunkPosition().y] = new Block(new Vector2((int) block.getChunkPosition().x,(int) block.getChunkPosition().y), 0, instance);
+                                blockList[(int) block.getChunkPosition().x][(int) block.getChunkPosition().y] = BlockManager.getBlockFromID(new Vector2((int) block.getChunkPosition().x,(int) block.getChunkPosition().y), 0, instance);
                             }
                         }
                     }

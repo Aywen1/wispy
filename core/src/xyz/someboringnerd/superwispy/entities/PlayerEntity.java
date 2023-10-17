@@ -1,25 +1,26 @@
 package xyz.someboringnerd.superwispy.entities;
 
-import box2dLight.DirectionalLight;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.npcinteractive.TranscendanceEngine.Entity.Entity;
-import net.npcinteractive.TranscendanceEngine.Managers.*;
+import net.npcinteractive.TranscendanceEngine.Managers.AudioManager;
+import net.npcinteractive.TranscendanceEngine.Managers.FileManager;
+import net.npcinteractive.TranscendanceEngine.Managers.InputSystem;
+import net.npcinteractive.TranscendanceEngine.Managers.LogManager;
 import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
 import xyz.someboringnerd.superwispy.GlobalData;
 import xyz.someboringnerd.superwispy.rooms.GameRoom;
 import xyz.someboringnerd.superwispy.util.DIRECTION;
 
-import static net.npcinteractive.TranscendanceEngine.Entity.Entity.HEIGHT;
-import static net.npcinteractive.TranscendanceEngine.Entity.Entity.WIDTH;
 import static net.npcinteractive.TranscendanceEngine.Managers.RoomManager.world;
 
 public class PlayerEntity extends Entity

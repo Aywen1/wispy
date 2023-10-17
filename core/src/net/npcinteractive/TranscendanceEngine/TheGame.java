@@ -7,14 +7,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.kotcrab.vis.ui.VisUI;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.npcinteractive.TranscendanceEngine.Events.GameRenderEvent;
 import net.npcinteractive.TranscendanceEngine.Events.WindowResizeEvent;
 import net.npcinteractive.TranscendanceEngine.Managers.*;
-import net.npcinteractive.TranscendanceEngine.Map.CharacterManager;
 import net.npcinteractive.TranscendanceEngine.Misc.EVENT_SIDE;
 import net.npcinteractive.TranscendanceEngine.Util.GlobalVariables;
 import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
@@ -43,10 +41,6 @@ public class TheGame extends ApplicationAdapter
 
 		batch = new SpriteBatch();
 		VisUI.load(VisUI.SkinScale.X1);
-
-	
-
-		new CharacterManager();
 
 		try {
 			try {

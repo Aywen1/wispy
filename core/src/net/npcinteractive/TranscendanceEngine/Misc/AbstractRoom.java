@@ -3,28 +3,16 @@ package net.npcinteractive.TranscendanceEngine.Misc;
 import box2dLight.Light;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Scaling;
-import lombok.AccessLevel;
-import lombok.Getter;
-import net.npcinteractive.TranscendanceEngine.Events.ToggleDebugMenuEvent;
 import net.npcinteractive.TranscendanceEngine.Exceptions.NoInteractionForRoom;
-import net.npcinteractive.TranscendanceEngine.Managers.EventManager;
-import net.npcinteractive.TranscendanceEngine.Managers.LogManager;
 import net.npcinteractive.TranscendanceEngine.Managers.RoomManager;
-import net.npcinteractive.TranscendanceEngine.Map.DebugCube;
-import net.npcinteractive.TranscendanceEngine.Map.Tile;
 import net.npcinteractive.TranscendanceEngine.TheGame;
 import net.npcinteractive.TranscendanceEngine.Util.GlobalVariables;
 import net.npcinteractive.TranscendanceEngine.Util.IInteractible;
 import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.*;
 
@@ -66,20 +54,6 @@ public abstract class AbstractRoom
         rayHandler.setShadows(true);
 
         GlobalVariables.RenderLights = !lights.isEmpty();
-
-
-        if(loadTiles() != null)
-            AddActors(loadTiles());
-    }
-
-    public Tile[] loadTiles()
-    {
-        if(!Gdx.files.internal("rescources/maps/" + getName() + ".json").exists())
-        {
-            return null;
-        }
-
-        return null;
     }
 
     /**
@@ -107,11 +81,6 @@ public abstract class AbstractRoom
         if(GlobalVariables.RenderLights)
         {
             rayHandler.setAmbientLight(0, 0, 0, .2f);
-        }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.END))
-        {
-            boolean test = false;
-            EventManager.EVENT_BUS.post(ToggleDebugMenuEvent.get(test));
         }
         // render background tiles
         for(Actor actor : tiles)
