@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import net.npcinteractive.TranscendanceEngine.Exceptions.NoInteractionForRoom;
+import net.npcinteractive.TranscendanceEngine.Managers.AudioManager;
 import net.npcinteractive.TranscendanceEngine.Managers.FileManager;
 import net.npcinteractive.TranscendanceEngine.Util.IInteractible;
 import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
@@ -60,6 +61,7 @@ public class Button
 
         if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && rect.overlaps(mousePosition))
         {
+            AudioManager.getInstance().playAudio("sfx/click");
             try {
                 interactible.onInteract(0);
             } catch (NoInteractionForRoom e) {

@@ -120,7 +120,8 @@ public class Tile extends Actor implements Cloneable
                 boundingBox = new Rectangle(cube.body.getPosition().x, cube.body.getPosition().y, 32, 32);
 
                 if (GameRoom.getMousePosition().overlaps(boundingBox) && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && Objects.equals(RoomManager.getLoaded().getName(), "GameRoom".toLowerCase())) {
-                    if (cube.body != null)
+                                            // casse pas si le block est la dernière couche
+                    if (cube.body != null && getY() != 0)
                     {
                         markForDelete = true;
 

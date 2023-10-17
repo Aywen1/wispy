@@ -8,21 +8,26 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.PerformanceCounter;
 import lombok.AccessLevel;
 import lombok.Getter;
+import net.npcinteractive.TranscendanceEngine.Managers.AudioManager;
 import net.npcinteractive.TranscendanceEngine.Managers.LogManager;
 import net.npcinteractive.TranscendanceEngine.Managers.RoomManager;
 import net.npcinteractive.TranscendanceEngine.Map.DebugCube;
+import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
+import xyz.someboringnerd.superwispy.GlobalData;
 import xyz.someboringnerd.superwispy.content.structures.Tree;
+import xyz.someboringnerd.superwispy.entities.PlayerEntity;
 import xyz.someboringnerd.superwispy.managers.BlockManager;
 import xyz.someboringnerd.superwispy.rooms.GameRoom;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Chunk extends Thread
 {
-    public List<Block> blockList = new ArrayList<>();
+    public Block[][] blockList = new Block[16][256];
 
     @Getter(AccessLevel.PUBLIC)
     private int offset;
@@ -41,9 +46,7 @@ public class Chunk extends Thread
     {
         instance = this;
         this.offset = offset;
-        counter = new PerformanceCounter("chunk " + (offset / 512));
-
-        counter.start();
+        LogManager.print("Offset = " + offset);
         // chunk a gauche de celui qu'on genère
         if(GameRoom.getInstance().doesChunkExistAtOffset(offset - 512))
         {
@@ -85,6 +88,15 @@ public class Chunk extends Thread
         {
             public void run()
             {
+
+                for(int x = 0; x < 16; x++)
+                {
+                    for(int y = 0; y < 256; y++)
+                    {
+                        blockList[x][y] = new Block(new Vector2(x, y), 0, instance);
+                    }
+                }
+
                 topBlock = new int[16];
                 if(offset == 0)
                 {
@@ -143,21 +155,26 @@ public class Chunk extends Thread
                     int realX = (generateRight ? i : 15 - i);
 
 
-                    blockList.add(new Block(BlockManager.registeredBlocks.get(1), new Vector2(offset + realX * 32, y * 32), 1, instance));
+                    blockList[realX][y] = (new Block(new Vector2(realX, y), 1, instance));
 
-                    for(int j = y - 1; j > 0; j--)
+                    for(int j = y - 1; j >= 0; j--)
                     {
                         if(j >= y - 3)
                         {
-                            blockList.add(new Block(BlockManager.registeredBlocks.get(2), new Vector2(offset + realX * 32, j * 32), 2, instance));
-                        }else{
-                            blockList.add(new Block(BlockManager.registeredBlocks.get(3), new Vector2(offset + realX * 32, j * 32), 3, instance));
+                            blockList[realX][j] = (new Block(new Vector2(realX, j), 2, instance));
+                        }
+                        else if(j == 0)
+                        {
+                            blockList[realX][j] = (new Block(new Vector2(realX, j), 6, instance));
+                        }
+                        else{
+                            blockList[realX][j] = (new Block(new Vector2(realX, j), 3, instance));
                         }
                     }
 
                     int tempY = y + 1;
 
-                    if(rng < 60 && rng > 50 && i < 13 && i > 3 && offset != 0)
+                    if(rng < 60 && rng > 50 && i < 10 && i > 5 && offset != 0)
                     {
                         Tree tree = new Tree();
 
@@ -166,7 +183,9 @@ public class Chunk extends Thread
                             for(int _y = 0; _y < tree.content[x].length; _y++)
                             {
                                 if(tree.content[x][_y] != 0)
-                                    blockList.add(new Block(BlockManager.registeredBlocks.get(tree.content[x][_y]), new Vector2(offset + realX * 32 + (x * 32), tempY * 32 + (_y * 32)), 1, instance));
+                                {
+                                    blockList[i + x][tempY + _y] = new Block(new Vector2(i + x, tempY + _y), tree.content[x][_y], instance);
+                                }
                             }
                         }
                     }
@@ -193,44 +212,74 @@ public class Chunk extends Thread
     // @fix : Une fois créé, un body ne peut être supprimé sinon ça marche pas les trucs
     public void GenerateBodies()
     {
-        for(Block block : blockList)
+        for(Block block : getBlockAsList())
         {
-            if(block.cube.body == null)
+            if(block != null)
             {
-                block.cube.createBody(RoomManager.world);
-            }
-
-            if(getBlockAtCoordinates(new Vector2(block.getX(), block.getY() + 32)) == null ||
-                    getBlockAtCoordinates(new Vector2(block.getX(), block.getY() - 32)) == null ||
-                    getBlockAtCoordinates(new Vector2(block.getX() + 32, block.getY())) == null ||
-                    getBlockAtCoordinates(new Vector2(block.getX() - 32, block.getY())) == null)
-            {
-                if(block.id != 0)
-                {
-                    block.cube.body.setActive(true);
+                if(block.body != null){
+                    RoomManager.world.destroyBody(block.body);
+                    block.body = null;
                 }
-            }else{
-                block.cube.body.setActive(false);
+                if (hasVisibleSide(block.getChunkPosition()))
+                {
+                    if (block.getId() != 0)
+                    {
+                        block.createBody(RoomManager.world);
+                    }
+                }
             }
         }
 
         bodiesGenerated = true;
     }
 
-    public Block getBlockAtCoordinates(Vector2 blockCoordinate)
+    private boolean hasVisibleSide(Vector2 chunkPosition)
     {
-        for(Block block : blockList)
+        try
         {
-            // comment monter le temps de génération de quelques secondes a une heure et demi :)
-            // - SBN
-            // LogManager.print(block.getPosition() + " | " + blockCoordinate + " | " + (block.getPosition() == blockCoordinate));
-            if(block.getPosition().x == blockCoordinate.x && block.getPosition().y == blockCoordinate.y)
+            return blockList[(int) (chunkPosition.x - 1)][(int) chunkPosition.y] == null ||
+                    blockList[(int) (chunkPosition.x + 1)][(int) chunkPosition.y] == null ||
+                    blockList[(int) (chunkPosition.x)][(int) chunkPosition.y + 1] == null ||
+                    blockList[(int) (chunkPosition.x)][(int) chunkPosition.y - 1] == null ||
+                    blockList[(int) (chunkPosition.x - 1)][(int) chunkPosition.y].getId() == 0 ||
+                    blockList[(int) (chunkPosition.x + 1)][(int) chunkPosition.y].getId() == 0 ||
+                    blockList[(int) (chunkPosition.x)][(int) chunkPosition.y + 1].getId() == 0 ||
+                    blockList[(int) (chunkPosition.x)][(int) chunkPosition.y - 1].getId() == 0;
+
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
+            return true;
+        }
+    }
+
+    public List<Block> getBlockAsList()
+    {
+        List<Block> blocks = new ArrayList<>();
+        for(int x = 0; x < 16; x++)
+        {
+            for(int y = 0; y < 256; y++)
             {
-                return block;
+                if(blockList[x][y] != null)
+                {
+                    blocks.add(blockList[x][y]);
+                }
             }
         }
 
-        return null;
+        return blocks;
+    }
+
+    public Block getBlockAtCoordinates(Vector2 blockCoordinate)
+    {
+        try
+        {
+            return blockList[(int) (blockCoordinate.x / 32 - offset)][(int) (blockCoordinate.y / 32)] != null ? blockList[(int) (blockCoordinate.x / 32)][(int) (blockCoordinate.y / 32)] : null;
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
+            return null;
+        }
     }
 
     AtomicBoolean GeneratingDone = new AtomicBoolean(false);
@@ -241,36 +290,61 @@ public class Chunk extends Thread
 
         if(!bodiesGenerated)
         {
-            GenerateBodies(); // PUTAIN
+            GenerateBodies();
         }
 
         if(isPlayerInChunk())
         {
             GameRoom.getInstance().Generate(offset);
             GenerateBodies();
-            batch.setColor(0, 1, 0, 1);
+            if(GlobalData.showChunkPlayerIsIn)
+                batch.setColor(0, 1, 0, 1);
         }
+
         List<Block> toDelete = new ArrayList<>();
-        for (Block block : blockList)
+        for (Block block : getBlockAsList())
         {
-            if(block.markForDelete)
+            if(block != null)
             {
-                toDelete.add(block);
-            }else {
-                block.draw(batch, 1.0f);
+                if (block.markForDelete)
+                {
+                    toDelete.add(block);
+                }
+                else
+                {
+                    block.draw(batch, 1.0f);
+                }
             }
         }
 
         if(!toDelete.isEmpty())
         {
-            for (Block block : toDelete)
-                RoomManager.world.destroyBody(block.cube.body);
+            for (Block block : getBlockAsList())
+            {
+                if(block != null)
+                {
+                    if (block.body != null)
+                    {
+                        if(block.markForDelete)
+                        {
+                            RoomManager.world.destroyBody(block.body);
 
-            blockList.removeAll(toDelete);
+                            if (blockList[(int) block.getChunkPosition().x][(int) block.getChunkPosition().y] != null)
+                            {
+                                AudioManager.getInstance().playAudio("sfx/explosion");
+                                blockList[(int) block.getChunkPosition().x][(int) block.getChunkPosition().y] = new Block(new Vector2((int) block.getChunkPosition().x,(int) block.getChunkPosition().y), 0, instance);
+                            }
+                        }
+                    }
+                }
+            }
 
             bodiesGenerated = false;
         }
 
         batch.setColor(1, 1, 1, 1);
+
+        if(GlobalData.displayDebugInformation)
+            RenderUtil.DrawText(batch, "Chunk " + offset + " to " + (offset + 512), new Vector2(offset, 70*32), RenderUtil.Deter52px);
     }
 }

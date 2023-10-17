@@ -2,6 +2,7 @@ package xyz.someboringnerd.superwispy.rooms;
 
 import box2dLight.DirectionalLight;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -13,6 +14,8 @@ import net.npcinteractive.TranscendanceEngine.Managers.FileManager;
 import net.npcinteractive.TranscendanceEngine.Map.Tile;
 import net.npcinteractive.TranscendanceEngine.Misc.AbstractRoom;
 import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
+import xyz.someboringnerd.superwispy.GlobalData;
+import xyz.someboringnerd.superwispy.content.Block;
 import xyz.someboringnerd.superwispy.content.Chunk;
 import xyz.someboringnerd.superwispy.entities.PlayerEntity;
 
@@ -30,6 +33,9 @@ public class GameRoom extends AbstractRoom
     public static AtomicInteger firstY = new AtomicInteger(65);
 
     Texture cursor = FileManager.getTexture("cursor");
+    Texture selector = FileManager.getTexture("selector");
+
+    public static Vector2 selectorPos = new Vector2();
 
     @Getter(AccessLevel.PUBLIC)
     PlayerEntity player;
@@ -64,7 +70,7 @@ public class GameRoom extends AbstractRoom
 
         instance = this;
 
-        player = new PlayerEntity(new Vector2(256, 64 * 32));
+        player = new PlayerEntity(new Vector2(256, 68 * 32));
         chunklist.add(new Chunk(0));
 
         Gdx.graphics.setCursor(Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("rescources/textures/hidden.png")), 0, 0));
@@ -75,6 +81,16 @@ public class GameRoom extends AbstractRoom
     {
         sky.setPosition((int)RenderUtil.getXRelativeZero() - 1280 / 2, (int)RenderUtil.getYRelativeZero() - 720 - 720 / 2);
 
+        if(Gdx.input.isKeyJustPressed(Input.Keys.F3))
+        {
+            GlobalData.displayDebugInformation = !GlobalData.displayDebugInformation;
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.F4))
+        {
+            GlobalData.showChunkPlayerIsIn = !GlobalData.showChunkPlayerIsIn;
+        }
+
         for(Chunk chunk : LoadedChunks())
         {
             chunk.Draw(batch);
@@ -82,7 +98,8 @@ public class GameRoom extends AbstractRoom
 
         player.draw(batch, 1.0f);
 
-        batch.draw(cursor, getMousePosition().x - 16, getMousePosition().y - 16);
+        batch.draw(cursor, getMousePosition().x - 24, getMousePosition().y - 24);
+        batch.draw(selector, selectorPos.x, selectorPos.y, Block.BLOCK_SCALE, Block.BLOCK_SCALE);
     }
 
     public List<Chunk> safeLoaded()

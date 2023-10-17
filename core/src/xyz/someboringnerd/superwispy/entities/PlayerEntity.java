@@ -12,11 +12,9 @@ import com.badlogic.gdx.physics.box2d.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.npcinteractive.TranscendanceEngine.Entity.Entity;
-import net.npcinteractive.TranscendanceEngine.Managers.FileManager;
-import net.npcinteractive.TranscendanceEngine.Managers.InputSystem;
-import net.npcinteractive.TranscendanceEngine.Managers.LogManager;
-import net.npcinteractive.TranscendanceEngine.Managers.RoomManager;
+import net.npcinteractive.TranscendanceEngine.Managers.*;
 import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
+import xyz.someboringnerd.superwispy.GlobalData;
 import xyz.someboringnerd.superwispy.rooms.GameRoom;
 import xyz.someboringnerd.superwispy.util.DIRECTION;
 
@@ -62,7 +60,7 @@ public class PlayerEntity extends Entity
 
 // Create a circle shape and set its radius to 6
         CircleShape circle = new CircleShape();
-        circle.setRadius(16);
+        circle.setRadius(15);
 
 // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
@@ -76,7 +74,7 @@ public class PlayerEntity extends Entity
     int frameStill;
     float previousX;
 
-    int yJump;
+    float yJump;
 
     boolean previouslyInput;
 
@@ -87,7 +85,7 @@ public class PlayerEntity extends Entity
         Vector2 vel = body.getLinearVelocity();
         Vector2 pos = body.getPosition();
 
-        float movement = 0.5f;
+        float movement = 0.5f, moveX = 0;
 
         if (Math.abs(vel.x) > MAX_VELOCITY) {
             vel.x = Math.signum(vel.x) * MAX_VELOCITY;
@@ -96,13 +94,13 @@ public class PlayerEntity extends Entity
 
         if (!InputSystem.moveLeft() && !InputSystem.moveRight())
         {
-            body.setLinearVelocity(vel.x * 0.7f, vel.y);
+            moveX = vel.x * 0.7f;
         }
 
         if (InputSystem.moveLeft() && vel.x > -MAX_VELOCITY)
         {
             direction = DIRECTION.LEFT;
-            body.setLinearVelocity(-(128 * movement), body.getLinearVelocity().y);
+            moveX = (-(128 * movement));
         }
 
         if (InputSystem.justMoveUp() && body.getLinearVelocity().y == 0)
@@ -111,23 +109,28 @@ public class PlayerEntity extends Entity
             LogManager.print("Jumped at y = "+ yJump);
             body.setLinearVelocity(vel.x, vel.y);
             body.setTransform(pos.x, pos.y, 0);
+            AudioManager.getInstance().playAudio("sfx/jump");
             body.applyLinearImpulse(0, (JUMP_VELOCITY*JUMP_VELOCITY*JUMP_VELOCITY) * 1.5f, 0, pos.y, true);
         }
 
         if (InputSystem.moveRight() && vel.x < MAX_VELOCITY)
         {
             direction = DIRECTION.RIGHT;
-            body.setLinearVelocity(128 * movement, body.getLinearVelocity().y);
+            moveX = (128 * movement);
         }
-        //LogManager.print(yJump + " " + (int)pos.y + " " + (previousX == pos.x) + " " + ((pos.y - (int)pos.y) > 0.016f) + " " +  ((yJump / 32) == (int)(pos.y / 32)));
 
-        if(previousX == pos.x && ((yJump / 32) == (int)(pos.y / 32)))
+        if(body.getLinearVelocity().y < 0)
         {
-            body.setLinearVelocity(0, body.getLinearVelocity().y);
+            body.setLinearVelocity(body.getLinearVelocity().x, body.getLinearVelocity().y * 1.1f);
+        }
+
+        if(previousX == pos.x && body.getLinearVelocity().y < 0)
+        {
+            body.setLinearVelocity(0, body.getLinearVelocity().y * 2);
         }
         else
         {
-            body.setLinearVelocity(body.getLinearVelocity().x, body.getLinearVelocity().y);
+            body.setLinearVelocity(moveX, body.getLinearVelocity().y);
         }
 
         body.setFixedRotation(true);
@@ -139,14 +142,17 @@ public class PlayerEntity extends Entity
 
         batch.draw(player, direction == DIRECTION.LEFT ? getX() + 32 : getX(), getY(), direction == DIRECTION.LEFT ? -32 : 32, 64);
 
-        RenderUtil.DrawText(batch, "X : " + (getX() / 32), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 32), RenderUtil.Deter30px);
-        RenderUtil.DrawText(batch, "Y : " + (getY() / 32), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 64), RenderUtil.Deter30px);
+        if(GlobalData.displayDebugInformation)
+        {
+            RenderUtil.DrawText(batch, "X : " + (getX()), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 32), RenderUtil.Deter30px);
+            RenderUtil.DrawText(batch, "Y : " + (getY()), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 64), RenderUtil.Deter30px);
 
-        RenderUtil.DrawText(batch, "vY : " + (body.getLinearVelocity().y), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 96), RenderUtil.Deter30px);
-        RenderUtil.DrawText(batch, "vX : " + (body.getLinearVelocity().x), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 128), RenderUtil.Deter30px);
+            RenderUtil.DrawText(batch, "vY : " + (body.getLinearVelocity().y), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 96), RenderUtil.Deter30px);
+            RenderUtil.DrawText(batch, "vX : " + (body.getLinearVelocity().x), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - 128), RenderUtil.Deter30px);
 
-        RenderUtil.DrawText(batch, "FPS : " + Gdx.graphics.getFramesPerSecond() , new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - (128 + 32)), RenderUtil.Deter30px);
-        RenderUtil.DrawText(batch, "Chunks loaded : " + GameRoom.getInstance().safeLoaded().size(), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - (128 + 64)), RenderUtil.Deter30px);
-        RenderUtil.DrawText(batch, "total chunks : " + GameRoom.getInstance().chunklist.size(), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - (128 + 96)), RenderUtil.Deter30px);
+            RenderUtil.DrawText(batch, "FPS : " + Gdx.graphics.getFramesPerSecond(), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - (128 + 32)), RenderUtil.Deter30px);
+            RenderUtil.DrawText(batch, "Chunks loaded : " + GameRoom.getInstance().safeLoaded().size(), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - (128 + 64)), RenderUtil.Deter30px);
+            RenderUtil.DrawText(batch, "total chunks : " + GameRoom.getInstance().chunklist.size(), new Vector2(RenderUtil.getXRelativeZero() + 32, RenderUtil.getYRelativeZero() - (128 + 96)), RenderUtil.Deter30px);
+        }
     }
 }

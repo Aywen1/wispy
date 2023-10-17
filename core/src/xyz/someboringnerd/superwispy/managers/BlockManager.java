@@ -20,5 +20,6 @@ public class BlockManager
         registeredBlocks.add(FileManager.getTexture("tiles/blocks/stone"));  // 3
         registeredBlocks.add(FileManager.getTexture("tiles/blocks/log"));    // 4
         registeredBlocks.add(FileManager.getTexture("tiles/blocks/leaves")); // 5
+        registeredBlocks.add(FileManager.getTexture("tiles/blocks/bedrock")); // 6
     }
 }
