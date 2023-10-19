@@ -18,7 +18,7 @@ jobs:
       - name: build the game and pack it for all platforms
         run: ./build.sh
       - name: prepare release
-      - run: mkdir staging && cp production_build/linux.zip staging &&  cp production_build/windows.zip staging && cp production_build/macos.zip staging
+        run: mkdir staging && cp production_build/linux.zip staging &&  cp production_build/windows.zip staging && cp production_build/macos.zip staging
 
       - name: Release build
         uses: marvinpinto/action-automatic-releases@latest
