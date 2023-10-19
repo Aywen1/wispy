@@ -5,17 +5,21 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.PerformanceCounter;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import net.npcinteractive.TranscendanceEngine.Managers.AudioManager;
 import net.npcinteractive.TranscendanceEngine.Managers.LogManager;
 import net.npcinteractive.TranscendanceEngine.Managers.RoomManager;
 import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
 import xyz.someboringnerd.superwispy.GlobalData;
+import xyz.someboringnerd.superwispy.content.blocks.Block;
+import xyz.someboringnerd.superwispy.content.blocks.simple.AirBlock;
 import xyz.someboringnerd.superwispy.content.structures.Tree;
 import xyz.someboringnerd.superwispy.managers.BlockManager;
 import xyz.someboringnerd.superwispy.rooms.GameRoom;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -78,6 +82,8 @@ public class Chunk extends Thread
     void Generate(int Lower, int Upper)
     {
         GeneratingDone.set(false);
+
+        // permet de pas avoir de lagspike quand on génère un chunk :)
         Thread thread = new Thread()
         {
             public void run()
@@ -87,7 +93,7 @@ public class Chunk extends Thread
                 {
                     for(int y = 0; y < 256; y++)
                     {
-                        blockList[x][y] = BlockManager.getBlockFromID(new Vector2(x, y), 0, instance);
+                        blockList[x][y] = BlockManager.getBlockFromName(new Vector2(x, y), "AirBlock", instance);
                     }
                 }
 
@@ -98,6 +104,12 @@ public class Chunk extends Thread
                 }
                 for(int i = 0; i < 16; i++)
                 {
+                    // le code si dessous génère la map de manière
+                    // pseudo aléatoire
+                    // c'est l'algo le plus complexe
+                    // que j'ai jamais eu a écrire.
+                    // ça permet de générer un terrain lisse
+                    // et cohérant entre de multiples chunks
                     if(i == 0)
                     {
                         y = Upper - 3;
@@ -149,24 +161,27 @@ public class Chunk extends Thread
                     int realX = (generateRight ? i : 15 - i);
 
 
-                    blockList[realX][y] = (BlockManager.getBlockFromID(new Vector2(realX, y), 1, instance));
+                    blockList[realX][y] = (BlockManager.getBlockFromName(new Vector2(realX, y), "GrassBlock", instance));
+
+                    // système de génération de terrain de Wish.com
 
                     for(int j = y - 1; j >= 0; j--)
                     {
-                        if(j >= y - 3)
+                        if(blockList[realX][j].getId() == 0)
                         {
-                            blockList[realX][j] = (BlockManager.getBlockFromID(new Vector2(realX, j), 2, instance));
-                        }
-                        else if(j == 0)
-                        {
-                            blockList[realX][j] = (BlockManager.getBlockFromID(new Vector2(realX, j), 6, instance));
-                        }
-                        else{
-                            blockList[realX][j] = (BlockManager.getBlockFromID(new Vector2(realX, j), 3, instance));
+                            if (j >= y - 3) {
+                                blockList[realX][j] = (BlockManager.getBlockFromName(new Vector2(realX, j), "DirtBlock", instance));
+                            } else if (j == 0) {
+                                blockList[realX][j] = (BlockManager.getBlockFromName(new Vector2(realX, j), "BedrockBlock", instance));
+                            } else {
+                                blockList[realX][j] = (BlockManager.getBlockFromName(new Vector2(realX, j), "StoneBlock", instance));
+                            }
                         }
                     }
 
                     int tempY = y + 1;
+
+                    // génère des arbres sur la map
 
                     if(rng < 60 && rng > 50 && i < 10 && i > 5 && offset != 0)
                     {
@@ -178,7 +193,7 @@ public class Chunk extends Thread
                             {
                                 if(tree.content[x][_y] != 0)
                                 {
-                                    blockList[i + x][tempY + _y] = BlockManager.getBlockFromID(new Vector2(i + x, tempY + _y), tree.content[x][_y], instance);
+                                    blockList[i + x - 2][tempY + _y] = BlockManager.getBlockByID(new Vector2(i + x - 2, tempY + _y), tree.content[x][_y], instance);
                                 }
                             }
                         }
@@ -231,15 +246,21 @@ public class Chunk extends Thread
     {
         try
         {
-            return blockList[(int) (chunkPosition.x - 1)][(int) chunkPosition.y] == null ||
-                    blockList[(int) (chunkPosition.x + 1)][(int) chunkPosition.y] == null ||
-                    blockList[(int) (chunkPosition.x)][(int) chunkPosition.y + 1] == null ||
-                    blockList[(int) (chunkPosition.x)][(int) chunkPosition.y - 1] == null ||
-                    !blockList[(int) (chunkPosition.x - 1)][(int) chunkPosition.y].hasCollision() ||
-                    !blockList[(int) (chunkPosition.x + 1)][(int) chunkPosition.y].hasCollision() ||
-                    !blockList[(int) (chunkPosition.x)][(int) chunkPosition.y + 1].hasCollision() ||
-                    !blockList[(int) (chunkPosition.x)][(int) chunkPosition.y - 1].hasCollision();
+            return Block.getBlockAtCoordinates(new Vector2((int) (chunkPosition.x - 1),(int) chunkPosition.y), this) == null ||
 
+                    Block.getBlockAtCoordinates(new Vector2((int) (chunkPosition.x + 1),(int) chunkPosition.y), this) == null ||
+
+                    Block.getBlockAtCoordinates(new Vector2((int) (chunkPosition.x),(int) chunkPosition.y + 1), this) == null ||
+
+                    Block.getBlockAtCoordinates(new Vector2((int) (chunkPosition.x),(int) chunkPosition.y - 1), this) == null ||
+
+                    !Objects.requireNonNull(Block.getBlockAtCoordinates(new Vector2((int) (chunkPosition.x - 1), (int) chunkPosition.y), this)).hasCollision() ||
+
+                    !Objects.requireNonNull(Block.getBlockAtCoordinates(new Vector2((int) (chunkPosition.x + 1), (int) chunkPosition.y), this)).hasCollision() ||
+
+                    !Objects.requireNonNull(Block.getBlockAtCoordinates(new Vector2((int) (chunkPosition.x), (int) chunkPosition.y + 1), this)).hasCollision() ||
+
+                    !Objects.requireNonNull(Block.getBlockAtCoordinates(new Vector2((int) (chunkPosition.x), (int) chunkPosition.y - 1), this)).hasCollision();
         }
         catch (ArrayIndexOutOfBoundsException e)
         {
@@ -268,16 +289,21 @@ public class Chunk extends Thread
     {
         try
         {
-            if((int) (blockCoordinate.x / 32 - offset) < 0 || (int) (blockCoordinate.x / 32 - offset) > 15){
+            if((int) (blockCoordinate.x) < 0 || (int) (blockCoordinate.x) > 15)
+            {
                 return null;
             }
-            return blockList[(int) (blockCoordinate.x / 32 - offset)][(int) (blockCoordinate.y / 32)] != null ? blockList[(int) (blockCoordinate.x / 32)][(int) (blockCoordinate.y / 32)] : null;
+            return blockList[(int) (blockCoordinate.x)][(int) (blockCoordinate.y)] != null ? blockList[(int) (blockCoordinate.x)][(int) (blockCoordinate.y)] : null;
         }
         catch (ArrayIndexOutOfBoundsException e)
         {
             return null;
         }
     }
+
+    @Setter
+    @Getter
+    private Block toEdit;
 
     AtomicBoolean GeneratingDone = new AtomicBoolean(false);
     PerformanceCounter counter;
@@ -298,47 +324,24 @@ public class Chunk extends Thread
                 batch.setColor(0, 1, 0, 1);
         }
 
-        List<Block> toDelete = new ArrayList<>();
         for (Block block : getBlockAsList())
         {
             if(block != null)
             {
-                if (block.markForDelete)
-                {
-                    toDelete.add(block);
-                }
-                else
-                {
-                    block.draw(batch, 1.0f);
-                    block.RandomTick();
-                }
+                block.draw(batch, 1.0f);
+                block.Update();
             }
         }
 
-        if(!toDelete.isEmpty())
+        if(toEdit != null)
         {
-            for (Block block : getBlockAsList())
-            {
-                if(block != null)
-                {
-                    if (block.body != null)
-                    {
-                        if(block.markForDelete)
-                        {
-                            RoomManager.world.destroyBody(block.body);
-
-                            if (blockList[(int) block.getChunkPosition().x][(int) block.getChunkPosition().y] != null)
-                            {
-                                AudioManager.getInstance().playAudio("sfx/explosion");
-                                blockList[(int) block.getChunkPosition().x][(int) block.getChunkPosition().y] = BlockManager.getBlockFromID(new Vector2((int) block.getChunkPosition().x,(int) block.getChunkPosition().y), 0, instance);
-                            }
-                        }
-                    }
-                }
-            }
-
-            bodiesGenerated = false;
+            AudioManager.getInstance().playAudio("sfx/explosion");
+            toEdit.replaceSelf(new AirBlock(toEdit.getChunkPosition(), this));
+            toEdit = null;
         }
+
+        bodiesGenerated = false;
+
 
         batch.setColor(1, 1, 1, 1);
 

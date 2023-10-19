@@ -10,14 +10,17 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import net.npcinteractive.TranscendanceEngine.Managers.FileManager;
 import net.npcinteractive.TranscendanceEngine.Map.Tile;
 import net.npcinteractive.TranscendanceEngine.Misc.AbstractRoom;
 import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
 import xyz.someboringnerd.superwispy.GlobalData;
-import xyz.someboringnerd.superwispy.content.Block;
+import xyz.someboringnerd.superwispy.content.blocks.Block;
 import xyz.someboringnerd.superwispy.content.Chunk;
 import xyz.someboringnerd.superwispy.entities.PlayerEntity;
+import xyz.someboringnerd.superwispy.gui.GUI;
+import xyz.someboringnerd.superwispy.managers.BlockManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +46,11 @@ public class GameRoom extends AbstractRoom
     @Getter(AccessLevel.PUBLIC)
     private static GameRoom instance;
 
+    public static boolean isInSelector(Block block)
+    {
+        return selectorPos.x == block.getRealCoordinate().x && selectorPos.y == block.getRealCoordinate().y;
+    }
+
     @Override
     public String roomMusic()
     {
@@ -60,6 +68,10 @@ public class GameRoom extends AbstractRoom
     {
 
     }
+
+    @Getter(AccessLevel.PUBLIC)
+    @Setter(AccessLevel.PUBLIC)
+    private static GUI gui;
 
     private DirectionalLight Sun;
 
@@ -81,6 +93,8 @@ public class GameRoom extends AbstractRoom
     {
         sky.setPosition((int)RenderUtil.getXRelativeZero() - 1280 / 2, (int)RenderUtil.getYRelativeZero() - 720 - 720 / 2);
 
+        BlockManager.Update();
+
         if(Gdx.input.isKeyJustPressed(Input.Keys.F3))
         {
             GlobalData.displayDebugInformation = !GlobalData.displayDebugInformation;
@@ -91,17 +105,24 @@ public class GameRoom extends AbstractRoom
             GlobalData.showChunkPlayerIsIn = !GlobalData.showChunkPlayerIsIn;
         }
 
-        for(Chunk chunk : LoadedChunks())
+        for(Chunk chunk : safeLoaded())
         {
             chunk.Draw(batch);
         }
 
         player.draw(batch, 1.0f);
 
+        if(GameRoom.getGui() == null)
+            batch.draw(selector, selectorPos.x, selectorPos.y, Block.BLOCK_SCALE, Block.BLOCK_SCALE);
+        else
+            GameRoom.getGui().Draw(batch);
+
         batch.draw(cursor, getMousePosition().x - 24, getMousePosition().y - 24);
-        batch.draw(selector, selectorPos.x, selectorPos.y, Block.BLOCK_SCALE, Block.BLOCK_SCALE);
     }
 
+    /**
+     * @return la liste des chunks chargés pour les dessiner
+     */
     public List<Chunk> safeLoaded()
     {
         List<Chunk> chunks = new ArrayList<>();
@@ -117,32 +138,28 @@ public class GameRoom extends AbstractRoom
         return chunks;
     }
 
-    public List<Chunk> LoadedChunks()
-    {
-        List<Chunk> chunks = new ArrayList<>();
-
-        for(Chunk ch : chunklist)
-        {
-            if((isChunkLoaded(ch)))
-            {
-                chunks.add(ch);
-            }
-        }
-
-        return chunks;
-    }
-
+    /**
+     * Determine si le chunk est assez proche du joueur pour être dessiné
+     * @param chunk instance du chunk
+     * @return vrai si le chunk est a moins de 1280 pixels du joueur en partant de son block le plus a gauche
+     */
     public static boolean isChunkLoaded(Chunk chunk)
     {
         return Math.abs(PlayerEntity.getInstance().getX() - chunk.getOffset()) <= 1280;
     }
 
+    /**
+     * Genère un chunk basé sur la position du précédent
+     * @param offset : position réelle du chunk sur la map (multiple positif ou négatif de 512)
+     */
     public void Generate(int offset)
     {
+        // genère un chunk a droite de celui existant
         if(!doesChunkExistAtOffset(offset + 512))
         {
             chunklist.add(new Chunk(offset + 512));
         }
+        // genère un chunk a gauche de celui existant
         else if(!doesChunkExistAtOffset(offset - 512))
         {
             chunklist.add(new Chunk(offset - 512));
@@ -150,11 +167,16 @@ public class GameRoom extends AbstractRoom
 
     }
 
-    public Chunk getChunkAtOffset(int i)
+    /**
+     * Obtient le chunk a un offset donné
+     * @param offset : offset du chunk cherché
+     * @return : l'instance du chunk, si elle existe
+     */
+    public Chunk getChunkAtOffset(int offset)
     {
         for (Chunk chunk : chunklist)
         {
-            if(chunk.getOffset() == i){
+            if(chunk.getOffset() == offset){
                 return chunk;
             }
         }
@@ -162,18 +184,19 @@ public class GameRoom extends AbstractRoom
         return null;
     }
 
-    public boolean doesChunkExistAtOffset(int i)
+    /**
+     * cherche si un chunk a un offset donné existe ou non
+     * @param offset : offset du chunk cherché
+     * @return vrai si le chunk existe
+     */
+    public boolean doesChunkExistAtOffset(int offset)
     {
-        for (Chunk chunk : chunklist)
-        {
-            if(chunk.getOffset() == i){
-                return true;
-            }
-        }
-
-        return false;
+        return getChunkAtOffset(offset) != null;
     }
 
+    /**
+     * @return la position approximative du curseur
+     */
     public static Rectangle getMousePosition()
     {
         return new Rectangle( RenderUtil.getXRelativeZero() +

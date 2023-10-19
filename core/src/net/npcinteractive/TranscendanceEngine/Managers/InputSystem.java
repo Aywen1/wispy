@@ -23,7 +23,7 @@ public class InputSystem
         if(!Controllers.getCurrent().getButton(Controllers.getCurrent().getMapping().buttonB)) buttonB = false;
         if(!Controllers.getCurrent().getButton(Controllers.getCurrent().getMapping().buttonStart)) start = false;
 
-        if(!Controllers.getCurrent().getButton(Controllers.getCurrent().getMapping().buttonDpadUp)) up = false;
+        if(!Controllers.getCurrent().getButton(Controllers.getCurrent().getMapping().buttonA)) up = false;
         if(!Controllers.getCurrent().getButton(Controllers.getCurrent().getMapping().buttonDpadDown)) down = false;
         if(!Controllers.getCurrent().getButton(Controllers.getCurrent().getMapping().buttonDpadLeft)) left = false;
         if(!Controllers.getCurrent().getButton(Controllers.getCurrent().getMapping().buttonDpadRight)) right = false;
@@ -31,12 +31,12 @@ public class InputSystem
         switch (input){
             case ANY:
                 return Controllers.getCurrent().getButton(-1);
-            case UP: return  Controllers.getCurrent().getButton(Controllers.getCurrent().getMapping().buttonDpadUp);
+            case UP: return  Controllers.getCurrent().getButton(Controllers.getCurrent().getMapping().buttonA);
             case DOWN: return  Controllers.getCurrent().getButton(Controllers.getCurrent().getMapping().buttonDpadDown);
             case LEFT: return  Controllers.getCurrent().getButton(Controllers.getCurrent().getMapping().buttonDpadLeft);
             case RIGHT: return  Controllers.getCurrent().getButton(Controllers.getCurrent().getMapping().buttonDpadRight);
             case UUP:
-                if(Controllers.getCurrent().getButton(Controllers.getCurrent().getMapping().buttonDpadUp))
+                if(Controllers.getCurrent().getButton(Controllers.getCurrent().getMapping().buttonA))
                 {
                     if(up) return false;
                     up = true;
@@ -134,37 +134,38 @@ public class InputSystem
     // ---------------- isKeyPressed equivalent, for movement and stuff like that
 
     public static boolean moveUp(){
-        return Gdx.input.isKeyPressed(Input.Keys.UP) || SafeIsButtonPressed(CONTROLLER_KEY.UP);
+        return Gdx.input.isKeyPressed(Input.Keys.SPACE) || SafeIsButtonPressed(CONTROLLER_KEY.UP);
     }
 
     public static boolean moveDown(){
-        return Gdx.input.isKeyPressed(Input.Keys.DOWN) || SafeIsButtonPressed(CONTROLLER_KEY.DOWN);
+        return Gdx.input.isKeyPressed(Input.Keys.S) || SafeIsButtonPressed(CONTROLLER_KEY.DOWN);
     }
 
-    public static boolean moveLeft(){
-        return Gdx.input.isKeyPressed(Input.Keys.LEFT) || SafeIsButtonPressed(CONTROLLER_KEY.LEFT);
+    public static boolean moveLeft()
+    {
+        return Gdx.input.isKeyPressed(Input.Keys.Q) || Gdx.input.isKeyPressed(Input.Keys.A) || SafeIsButtonPressed(CONTROLLER_KEY.LEFT);
     }
 
     public static boolean moveRight(){
-        return Gdx.input.isKeyPressed(Input.Keys.RIGHT) || SafeIsButtonPressed(CONTROLLER_KEY.RIGHT);
+        return Gdx.input.isKeyPressed(Input.Keys.D) || SafeIsButtonPressed(CONTROLLER_KEY.RIGHT);
     }
 
     // ---------------- isKeyJustPressed equivalent, for UI and stuff
 
     public static boolean justMoveUp(){
-        return Gdx.input.isKeyJustPressed(Input.Keys.UP) || SafeIsButtonPressed(CONTROLLER_KEY.UUP);
+        return Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || SafeIsButtonPressed(CONTROLLER_KEY.UUP);
     }
 
     public static boolean justMoveDown(){
-        return Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || SafeIsButtonPressed(CONTROLLER_KEY.UDOWN);
+        return Gdx.input.isKeyJustPressed(Input.Keys.S) || SafeIsButtonPressed(CONTROLLER_KEY.UDOWN);
     }
 
     public static boolean justMoveLeft(){
-        return Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || SafeIsButtonPressed(CONTROLLER_KEY.ULEFT);
+        return Gdx.input.isKeyJustPressed(Input.Keys.Q) || Gdx.input.isKeyJustPressed(Input.Keys.A) || SafeIsButtonPressed(CONTROLLER_KEY.ULEFT);
     }
 
     public static boolean justMoveRight(){
-        return Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || SafeIsButtonPressed(CONTROLLER_KEY.URIGHT);
+        return Gdx.input.isKeyJustPressed(Input.Keys.D) || SafeIsButtonPressed(CONTROLLER_KEY.URIGHT);
     }
 
     public static boolean any(){
