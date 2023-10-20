@@ -38,7 +38,7 @@ public class BlockManager
         /*
             Le code suivant permet de référencer automatiquement les blocks du jeu de manière simple et efficace.
 
-            Paniquez pas, c'est juste l'orienté object
+            Paniquez pas, c'est juste l'orienté object et non un problème fondamental de design du langage /s
         */
 
         Reflections reflections = new Reflections("xyz.someboringnerd.superwispy.content.blocks");
@@ -48,19 +48,23 @@ public class BlockManager
         sortedBlockClasses.sort(Comparator.comparing(Class::getSimpleName));
 
         int i = 0;
-        for (Class<? extends Block> blockClass : sortedBlockClasses) {
-            try {
+        for (Class<? extends Block> blockClass : sortedBlockClasses)
+        {
+            try
+            {
                 Constructor<? extends Block> constructor = blockClass.getConstructor(Vector2.class, Chunk.class);
                 blockMap.put(i, blockClass);
                 i++;
-            } catch (NoSuchMethodException e) {
+            }
+            catch (NoSuchMethodException e)
+            {
                 throw new RuntimeException("Block class " + blockClass.getSimpleName() + " is missing the required constructor.");
             }
         }
     }
 
     // ------------------------------------------------------------------------------
-    //              À RETIRER LE SYSTÈME D'INVENTAIRE SERA FINI !!!!!!!
+    //              À RETIRER QUAND LE SYSTÈME D'INVENTAIRE SERA FINI !!!!!!!
     // ------------------------------------------------------------------------------
     public static int selected = 2;
     public static void Update()

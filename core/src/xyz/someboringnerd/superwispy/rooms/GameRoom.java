@@ -54,7 +54,7 @@ public class GameRoom extends AbstractRoom
     @Override
     public String roomMusic()
     {
-        return null;
+        return "game";
     }
 
     @Override
