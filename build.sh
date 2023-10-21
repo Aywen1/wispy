@@ -3,6 +3,7 @@
 mv desktop/build/libs/desktop-1.0.jar desktop/build/libs/SuperWispy.jar
 
 rm -rf production_build
+
 mkdir production_build
 
 rm -rf out-linux
