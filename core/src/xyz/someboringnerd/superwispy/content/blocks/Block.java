@@ -12,13 +12,19 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import net.npcinteractive.TranscendanceEngine.Managers.RoomManager;
 import xyz.someboringnerd.superwispy.content.Chunk;
+import xyz.someboringnerd.superwispy.content.items.debug.BlockItem;
+import xyz.someboringnerd.superwispy.entities.DroppedItemEntity;
 import xyz.someboringnerd.superwispy.managers.BlockManager;
+import xyz.someboringnerd.superwispy.managers.ItemManager;
 import xyz.someboringnerd.superwispy.rooms.GameRoom;
+import xyz.someboringnerd.superwispy.util.ItemStack;
 
 public class Block extends Actor
 {
 
     public boolean markForDelete;
+
+    @Getter(AccessLevel.PUBLIC)
     private Texture texture;
 
     @Getter(AccessLevel.PUBLIC)
@@ -86,15 +92,30 @@ public class Block extends Actor
     }
 
     /**
-     * Remplace le block par une instance d'un autre block
+     * Remplace le block par une instance d'un autre block sans le dropper
      * @param instance instance d'un block a remplacer
      */
     public void replaceSelf(Block instance)
+    {
+        replaceSelf(instance, false);
+    }
+
+    /**
+     * Remplace le block par une instance d'un autre block
+     * @param instance instance d'un block a remplacer
+     * @param drop si le block doit se dropper
+     */
+    public void replaceSelf(Block instance, boolean drop)
     {
         if(body != null)
             RoomManager.world.destroyBody(body);
 
         chunk.blockList[(int) getChunkPosition().x][(int) getChunkPosition().y] = instance;
+
+        if(drop)
+        {
+            ItemManager.dropSomething(new DroppedItemEntity(new Vector2(getRealCoordinate().x, getRealCoordinate().y + 16), new ItemStack(new BlockItem(this))));
+        }
     }
 
     @Override
@@ -172,5 +193,13 @@ public class Block extends Actor
     public boolean hasCollision()
     {
         return true;
+    }
+
+    /**
+     * Overrided par les blocks n'aillant pas de collision comme le block d'air
+     */
+    public boolean isTransparent()
+    {
+        return false;
     }
 }

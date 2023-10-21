@@ -336,7 +336,7 @@ public class Chunk extends Thread
         if(toEdit != null)
         {
             AudioManager.getInstance().playAudio("sfx/explosion");
-            toEdit.replaceSelf(new AirBlock(toEdit.getChunkPosition(), this));
+            toEdit.replaceSelf(new AirBlock(toEdit.getChunkPosition(), this), true);
             toEdit = null;
         }
 

@@ -167,7 +167,7 @@ public class RoomManager
 
                 GlobalVariables.RenderLights = loaded.lights.isEmpty();
 
-                AudioManager.getInstance().playAudio("music/" + loaded.roomMusic(), true, .2f);
+                AudioManager.getInstance().playAudio("music/" + loaded.roomMusic(), true, .5f);
 
                 return;
             }

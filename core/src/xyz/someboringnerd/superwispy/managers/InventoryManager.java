@@ -1,5 +1,8 @@
 package xyz.someboringnerd.superwispy.managers;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import xyz.someboringnerd.superwispy.content.items.debug.Air;
 import xyz.someboringnerd.superwispy.util.ItemStack;
 
 import java.util.ArrayList;
@@ -7,7 +10,22 @@ import java.util.List;
 
 public class InventoryManager
 {
+    @Getter(AccessLevel.PUBLIC)
     private List<ItemStack> playerInventory = new ArrayList<>();
+
+    @Getter(AccessLevel.PUBLIC)
+    private static InventoryManager instance;
+
+    public InventoryManager()
+    {
+        instance = this;
+
+        for(int i = 0; i < 40; i++)
+        {
+            playerInventory.add(new ItemStack(new Air()));
+            playerInventory.get(i).setQuantity(0);
+        }
+    }
 
     /**
      * informations importantes : <br>
@@ -29,5 +47,19 @@ public class InventoryManager
     public ItemStack getItemInSlot(int index)
     {
         return playerInventory.get(index);
+    }
+
+    public void Update()
+    {
+        int i = 0;
+        for (ItemStack stack: playerInventory)
+        {
+            if(!(stack.getItem() instanceof Air) && stack.getQuantity() <= 0)
+            {
+                playerInventory.set(i, new ItemStack(new Air()));
+                playerInventory.get(i).setQuantity(0);
+            }
+            i++;
+        }
     }
 }

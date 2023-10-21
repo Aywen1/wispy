@@ -18,7 +18,9 @@ import net.npcinteractive.TranscendanceEngine.Managers.FileManager;
 import net.npcinteractive.TranscendanceEngine.Managers.InputSystem;
 import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
 import xyz.someboringnerd.superwispy.GlobalData;
+import xyz.someboringnerd.superwispy.gui.hud.Hotbar;
 import xyz.someboringnerd.superwispy.gui.screens.Inventory;
+import xyz.someboringnerd.superwispy.managers.InventoryManager;
 import xyz.someboringnerd.superwispy.rooms.GameRoom;
 
 import static net.npcinteractive.TranscendanceEngine.Managers.RoomManager.world;
@@ -31,9 +33,15 @@ public class PlayerEntity extends Entity
     final static float MAX_VELOCITY = 256f;
     final static float JUMP_VELOCITY = 128f;
 
-    private Texture player;
+    private final Texture player;
 
     public DIRECTION direction;
+
+    @Getter(AccessLevel.PUBLIC)
+    private final Hotbar hotbar = new Hotbar();
+
+    @Getter(AccessLevel.PUBLIC)
+    private final InventoryManager inventory = new InventoryManager();
 
     public PlayerEntity(Vector2 position)
     {
@@ -118,8 +126,8 @@ public class PlayerEntity extends Entity
                 moveX = (128 * movement);
             }
 
-            // si le joueur saute et que sa vélocité verticale est égale a 0
-            if (InputSystem.justMoveUp() && body.getLinearVelocity().y == 0) {
+            // si le joueur saute et que sa vélocité verticale est quasi égale a 0
+            if (InputSystem.justMoveUp() && Math.abs(body.getLinearVelocity().y) <= 0.03f) {
                 yJump = pos.y / 32;
 
                 body.setLinearVelocity(vel.x, vel.y);
@@ -142,7 +150,7 @@ public class PlayerEntity extends Entity
         // au prix que quand ça arrive, son saut est réduit de moitié.
         // enlever la condition body.getLinearVelocity().y < 0 fixe le problème mais rend les sauts assez akward.
         // plus de tests sont necessaires
-        if(previousX == pos.x && body.getLinearVelocity().y < 0 && (int)(pos.y / 32) == (int)yJump)
+        if(previousX / 32 == pos.x / 32 && body.getLinearVelocity().y < 0 && (int)(pos.y / 32) == (int)yJump)
         {
             body.setLinearVelocity(0, body.getLinearVelocity().y);
         }
@@ -171,6 +179,8 @@ public class PlayerEntity extends Entity
         {
             GameRoom.setGui(new Inventory());
         }
+
+        hotbar.Draw(batch);
 
         // informations de debug
         if(GlobalData.displayDebugInformation)

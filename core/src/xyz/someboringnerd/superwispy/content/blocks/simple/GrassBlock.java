@@ -14,7 +14,9 @@ public class GrassBlock extends Block
     @Override
     public void Update()
     {
-        if(getBlockAtCoordinates(new Vector2(getChunkPosition().x, getChunkPosition().y + 1)) != null && getBlockAtCoordinates(new Vector2(getChunkPosition().x, getChunkPosition().y + 1)).hasCollision())
+        if(getBlockAtCoordinates(new Vector2(getChunkPosition().x, getChunkPosition().y + 1)) != null &&
+                (getBlockAtCoordinates(new Vector2(getChunkPosition().x, getChunkPosition().y + 1)).hasCollision() &&
+                !getBlockAtCoordinates(new Vector2(getChunkPosition().x, getChunkPosition().y + 1)).isTransparent()))
         {
             replaceSelf(new DirtBlock(new Vector2((int) getChunkPosition().x, (int) getChunkPosition().y), chunk));
         }

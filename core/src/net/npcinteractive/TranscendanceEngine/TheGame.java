@@ -137,10 +137,9 @@ public class TheGame extends ApplicationAdapter
 		batch.setProjectionMatrix(RenderUtil.camera.combined);
 		ScreenUtils.clear(0, 0, 0, 1);
 		batch.begin();
-				
-		EventManager.getInstance().FireEvent(GameRenderEvent.get(batch), EVENT_SIDE.BOTH);
 
 		mainApp.Render();
+		EventManager.getInstance().FireEvent(GameRenderEvent.get(batch), EVENT_SIDE.BOTH);
 		
 		batch.setColor(1, 1, 1, 1);
 

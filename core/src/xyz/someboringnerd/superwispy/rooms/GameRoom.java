@@ -18,9 +18,13 @@ import net.npcinteractive.TranscendanceEngine.Util.RenderUtil;
 import xyz.someboringnerd.superwispy.GlobalData;
 import xyz.someboringnerd.superwispy.content.blocks.Block;
 import xyz.someboringnerd.superwispy.content.Chunk;
+import xyz.someboringnerd.superwispy.content.items.misc.Stick;
+import xyz.someboringnerd.superwispy.entities.DroppedItemEntity;
 import xyz.someboringnerd.superwispy.entities.PlayerEntity;
 import xyz.someboringnerd.superwispy.gui.GUI;
 import xyz.someboringnerd.superwispy.managers.BlockManager;
+import xyz.someboringnerd.superwispy.managers.ItemManager;
+import xyz.someboringnerd.superwispy.util.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,10 +116,17 @@ public class GameRoom extends AbstractRoom
 
         player.draw(batch, 1.0f);
 
+        ItemManager.Update(batch);
+
         if(GameRoom.getGui() == null)
             batch.draw(selector, selectorPos.x, selectorPos.y, Block.BLOCK_SCALE, Block.BLOCK_SCALE);
         else
             GameRoom.getGui().Draw(batch);
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.F2))
+        {
+            ItemManager.dropSomething(new DroppedItemEntity(new Vector2(getMousePosition().x, getMousePosition().y), new ItemStack(new Stick())));
+        }
 
         batch.draw(cursor, getMousePosition().x - 24, getMousePosition().y - 24);
     }

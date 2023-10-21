@@ -85,7 +85,7 @@ public class RenderUtil
     @description(desc = "Draw text at specified coordinates with specified font")
     public static void DrawText(Batch batch, String text, Vector2 position, BitmapFont font)
     {
-        font.draw(batch, text, position.x, position.y);
+        font.draw(batch, text, (int)position.x, (int)position.y);
     }
 
     @description(desc = "Draw text at specified coordinates with specified font with a max width for textbox and stuff")

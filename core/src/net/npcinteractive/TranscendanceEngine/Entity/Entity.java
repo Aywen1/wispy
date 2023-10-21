@@ -33,4 +33,9 @@ public abstract class Entity extends Actor
     {
 
     }
+
+    public Vector2 getPosition()
+    {
+        return new Vector2(getX(), getY());
+    }
 }

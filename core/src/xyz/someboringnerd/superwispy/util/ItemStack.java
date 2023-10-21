@@ -30,12 +30,14 @@ public class ItemStack
     public ItemStack(Item item, String displayName)
     {
         this.item = item;
+        this.quantity = 1;
         this.name = displayName;
     }
 
     public ItemStack(Item item)
     {
         this.item = item;
+        this.quantity = 1;
         this.name = item.getDefaultName();
     }
 
@@ -46,7 +48,7 @@ public class ItemStack
      */
     public boolean isEqual(ItemStack stack)
     {
-        return this.getItem() == stack.getItem() && stack.getName().equals(getName());
+        return this.getItem().getID() == stack.getItem().getID() && stack.getName().equals(getName());
     }
 
     /**

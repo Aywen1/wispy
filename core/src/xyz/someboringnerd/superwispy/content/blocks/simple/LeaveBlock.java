@@ -10,4 +10,9 @@ public class LeaveBlock extends Block
     {
         super(position, chunk);
     }
+
+    @Override
+    public boolean isTransparent() {
+        return true;
+    }
 }
