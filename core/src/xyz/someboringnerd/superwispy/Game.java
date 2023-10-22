@@ -23,7 +23,7 @@ public class Game extends MainClass
     {
         if(PlayerEntity.getInstance() != null)
         {
-            RenderUtil.getViewport().getCamera().position.lerp(new Vector3((int) PlayerEntity.getInstance().getX(), (int) PlayerEntity.getInstance().getY(), 0), 0.075f);
+            RenderUtil.getViewport().getCamera().position.lerp(new Vector3((int) PlayerEntity.getInstance().getX(), (int) PlayerEntity.getInstance().getY(), 0), 0.75f);
         }
     }
 

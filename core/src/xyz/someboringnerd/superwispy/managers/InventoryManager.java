@@ -54,7 +54,12 @@ public class InventoryManager
         int i = 0;
         for (ItemStack stack: playerInventory)
         {
-            if(!(stack.getItem() instanceof Air) && stack.getQuantity() <= 0)
+            if(stack != null) {
+                if (!(stack.getItem() instanceof Air) && stack.getQuantity() <= 0) {
+                    playerInventory.set(i, new ItemStack(new Air()));
+                    playerInventory.get(i).setQuantity(0);
+                }
+            }else
             {
                 playerInventory.set(i, new ItemStack(new Air()));
                 playerInventory.get(i).setQuantity(0);

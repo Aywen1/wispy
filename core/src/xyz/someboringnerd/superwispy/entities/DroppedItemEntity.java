@@ -59,7 +59,7 @@ public class DroppedItemEntity extends Entity
         box.dispose();
         boundingBox = new Rectangle();
     }
-
+    public int frameAlive;
     @Override
     public void draw(Batch batch, float parentAlpha)
     {
@@ -70,7 +70,7 @@ public class DroppedItemEntity extends Entity
 
         for(DroppedItemEntity entity : ItemManager.dropList)
         {
-            if(entity.body != null && entity.stack.isEqual(this.stack) && UUID != entity.getUUID() && MathUtil.getDistance(body.getPosition(), entity.body.getPosition()) / 32 <= 2f)
+            if(entity.body != null && entity.stack.isEqual(this.stack) && UUID != entity.getUUID() && MathUtil.getDistance(body.getPosition(), entity.body.getPosition()) / 32 <= 2f && entity.frameAlive >= 30)
             {
                 this.stack.setQuantity(this.stack.getQuantity() + entity.stack.getQuantity());
                 entity.DestroySelf();
@@ -78,13 +78,19 @@ public class DroppedItemEntity extends Entity
             }
         }
 
+        frameAlive++;
 
+        if(frameAlive >= 60 * 60 * 10)
+        {
+            DestroySelf();
+            ItemManager.removeList.add(this);
+        }
 
         if(GlobalData.displayDebugInformation)
             RenderUtil.DrawText(batch, stack.toObject().toString(5), new Vector2(getX(), getY() + 30), RenderUtil.DebugFont);
     }
 
-    private void DestroySelf()
+    public void DestroySelf()
     {
         world.destroyBody(body);
 

@@ -13,7 +13,7 @@ import xyz.someboringnerd.superwispy.rooms.GameRoom;
  * Les enfants de cette classe sont l'équivalent des Screen de Minecraft, un seul peut être affiché en même temps.
  * Ne pas confondre avec le HUD !
  */
-public class GUI
+public abstract class GUI
 {
     private Texture image;
 
@@ -39,11 +39,17 @@ public class GUI
     {
         batch.draw(image, RenderUtil.getXRelativeZero() + 640 - getScale().x / 2, RenderUtil.getYRelativeZero() - 360 - getScale().x / 2, getScale().x, getScale().y);
 
+        UpdateGUI(batch);
+
         if(InputSystem.Return())
         {
+            OnClose();
             GameRoom.setGui(null);
         }
     }
+
+    public abstract void UpdateGUI(Batch batch);
+    public abstract void OnClose();
 
     public Vector2 getScale()
     {

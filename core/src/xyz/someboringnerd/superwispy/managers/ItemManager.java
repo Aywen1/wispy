@@ -61,30 +61,37 @@ public class ItemManager
         {
             dropList.remove(entity);
         }
-
+        boolean found = false;
         for(DroppedItemEntity entity : dropList)
         {
-            if(MathUtil.getDistance(entity.getPosition(), PlayerEntity.getInstance().getPosition()) / 32 <= 1.5f)
+            if(MathUtil.getDistance(entity.getPosition(), PlayerEntity.getInstance().getPosition()) / 32 <= 1.5f && entity.frameAlive >= 45)
             {
                 int i = 0;
                 for(ItemStack stack : InventoryManager.getInstance().getPlayerInventory())
                 {
-                    if(stack.isEqual(entity.getStack()))
+                    if(!found)
                     {
-                        stack.setQuantity(stack.getQuantity() + entity.getStack().getQuantity());
-                        removeList.add(entity);
-                        LogManager.print("Added " + entity.getStack().getQuantity() + " " + entity.getStack().getName() + " to slot " + i);
-                        break;
-                    }
-                    else if(stack.getItem() instanceof Air)
-                    {
-                        PlayerEntity.getInstance().getInventory().getPlayerInventory().set(i, entity.getStack());
-                        removeList.add(entity);
-                        LogManager.print("Put " + entity.getStack().getQuantity() + " " + entity.getStack().getName() + " in slot " + i);
-                        break;
+                        if (stack.isEqual(entity.getStack()))
+                        {
+                            stack.setQuantity(stack.getQuantity() + entity.getStack().getQuantity());
+                            entity.DestroySelf();
+                            removeList.add(entity);
+                            LogManager.print("Added " + entity.getStack().getQuantity() + " " + entity.getStack().getName() + " to slot " + i);
+                            found = true;
+                        }
+                        else if (stack.getItem() instanceof Air)
+                        {
+                            PlayerEntity.getInstance().getInventory().getPlayerInventory().set(i, entity.getStack());
+                            entity.DestroySelf();
+                            removeList.add(entity);
+                            LogManager.print("Put " + entity.getStack().getQuantity() + " " + entity.getStack().getName() + " in slot " + i);
+                            found = true;
+                        }
                     }
                     i++;
                 }
+
+                found = false;
             }
         }
 

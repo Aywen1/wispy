@@ -150,7 +150,7 @@ public class PlayerEntity extends Entity
         // au prix que quand ça arrive, son saut est réduit de moitié.
         // enlever la condition body.getLinearVelocity().y < 0 fixe le problème mais rend les sauts assez akward.
         // plus de tests sont necessaires
-        if(previousX / 32 == pos.x / 32 && body.getLinearVelocity().y < 0 && (int)(pos.y / 32) == (int)yJump)
+        if(previousX == pos.x && body.getLinearVelocity().y < 0 && (int)(pos.y / 32) == (int)yJump)
         {
             body.setLinearVelocity(0, body.getLinearVelocity().y);
         }

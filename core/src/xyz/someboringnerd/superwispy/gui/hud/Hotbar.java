@@ -73,11 +73,19 @@ public class Hotbar
 
         for(int i = 0; i < 9; i++)
         {
-            batch.draw(InventoryManager.getInstance().getPlayerInventory().get(i).getItem().getItemTexture(), position.x + ((getScale().x / 9f) * i) + 7.5f, position.y + 7.5f, getScale().x / 11f, getScale().x / 11f);
-            int size = InventoryManager.getInstance().getPlayerInventory().get(i).getQuantity();
+            if(InventoryManager.getInstance().getPlayerInventory().get(i) != null)
+            {
 
-            if(size != 0 || !(InventoryManager.getInstance().getPlayerInventory().get(i).getItem() instanceof Air))
-                RenderUtil.DrawText(batch, size + "", new Vector2(position.x + ((getScale().x / 9f) * i) + (size <= 9 ? 46 : 38), position.y + 25), RenderUtil.DebugFont);
+                if(InventoryManager.getInstance().getPlayerInventory().get(i).getItem() instanceof Air)
+                {
+                    InventoryManager.getInstance().getPlayerInventory().get(i).setQuantity(0);
+                }
+                batch.draw(InventoryManager.getInstance().getPlayerInventory().get(i).getItem().getItemTexture(), position.x + ((getScale().x / 9f) * i) + 7.5f, position.y + 7.5f, getScale().x / 11f, getScale().x / 11f);
+                int size = InventoryManager.getInstance().getPlayerInventory().get(i).getQuantity();
+
+                if (size != 0 || !(InventoryManager.getInstance().getPlayerInventory().get(i).getItem() instanceof Air))
+                    RenderUtil.DrawText(batch, size + "", new Vector2(position.x + ((getScale().x / 9f) * i) + (12), position.y + 25), RenderUtil.DebugFont);
+            }
         }
     }
 }

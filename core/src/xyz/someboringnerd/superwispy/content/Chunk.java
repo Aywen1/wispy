@@ -44,8 +44,7 @@ public class Chunk extends Thread
     {
         instance = this;
         this.offset = offset;
-        LogManager.print("Offset = " + offset);
-        // chunk a gauche de celui qu'on genère
+        // chunk a gauche de celui qui est déjà chargé
         if(GameRoom.getInstance().doesChunkExistAtOffset(offset - 512))
         {
             LogManager.print("Generated chunk on the right of an existing chunk");
@@ -53,14 +52,15 @@ public class Chunk extends Thread
             generateRight = true;
             Generate(GameRoom.getInstance().getChunkAtOffset(offset - 512).rightY - 3, GameRoom.getInstance().getChunkAtOffset(offset - 512).rightY + 3);
         }
-        // chunk a droite de celui qu'on genère
+        // chunk a droite de celui qui est déjà chargé
         else if(GameRoom.getInstance().doesChunkExistAtOffset(offset + 512))
         {
             LogManager.print("Generated chunk on the left of an existing chunk");
-            generateRight = false;
             LogManager.print("Top right of previous chunk : " + GameRoom.getInstance().getChunkAtOffset(offset + 512).leftY);
+            generateRight = false;
             Generate(GameRoom.getInstance().getChunkAtOffset(offset + 512).leftY - 3, GameRoom.getInstance().getChunkAtOffset(offset + 512).leftY + 3);
-        }else
+        }
+        else // génère le premier chunk en 0;0
         {
             if(offset != 0)
             {
@@ -88,7 +88,6 @@ public class Chunk extends Thread
         {
             public void run()
             {
-
                 for(int x = 0; x < 16; x++)
                 {
                     for(int y = 0; y < 256; y++)
@@ -113,75 +112,41 @@ public class Chunk extends Thread
                     if(i == 0)
                     {
                         y = Upper - 3;
-                        if(generateRight)
-                            leftY = y;
-                        else
-                            rightY = y;
+                        if(generateRight) leftY = y;
+                        else rightY = y;
                     }
                     if(i == 15)
                     {
-                        if(generateRight)
-                            rightY = y;
-                        else
-                            leftY = y;
+                        if(generateRight) rightY = y;
+                        else leftY = y;
                     }
                     int rng = new Random().nextInt(0, 100);
-                    if(rng <= 20)
-                    {
-                        y--;
-                    }
-                    else if(rng >= 80)
-                    {
-                        y++;
-                    }
 
-                    if(y <= Lower)
-                    {
-                        y = Lower;
-                    }
+                    if(rng <= 20)y--;
+                    else if(rng >= 80)y++;
 
-                    if(y >= Upper)
-                    {
-                        y = Upper;
-                    }
+                    if(y <= Lower) y = Lower;
+                    if(y >= Upper) y = Upper;
 
-                    if(y <= 54)
-                    {
-                        y = 54;
-                    }
-
-                    if(y >= 70)
-                    {
-                        y = 70;
-                    }
+                    if(y <= 54) y = 54;
+                    if(y >= 70) y = 70;
 
 
                     topBlock[(generateRight ? i : 15 - i)] = y;
-
                     int realX = (generateRight ? i : 15 - i);
 
-
                     blockList[realX][y] = (BlockManager.getBlockFromName(new Vector2(realX, y), "GrassBlock", instance));
-
-                    // système de génération de terrain de Wish.com
 
                     for(int j = y - 1; j >= 0; j--)
                     {
                         if(blockList[realX][j].getId() == 0)
                         {
-                            if (j >= y - 3) {
-                                blockList[realX][j] = (BlockManager.getBlockFromName(new Vector2(realX, j), "DirtBlock", instance));
-                            } else if (j == 0) {
-                                blockList[realX][j] = (BlockManager.getBlockFromName(new Vector2(realX, j), "BedrockBlock", instance));
-                            } else {
-                                blockList[realX][j] = (BlockManager.getBlockFromName(new Vector2(realX, j), "StoneBlock", instance));
-                            }
+                            if (j >= y - 3) blockList[realX][j] = (BlockManager.getBlockFromName(new Vector2(realX, j), "DirtBlock", instance));
+                            else if (j == 0) blockList[realX][j] = (BlockManager.getBlockFromName(new Vector2(realX, j), "BedrockBlock", instance));
+                            else blockList[realX][j] = (BlockManager.getBlockFromName(new Vector2(realX, j), "StoneBlock", instance));
                         }
                     }
-
                     int tempY = y + 1;
-
-                    // génère des arbres sur la map
 
                     if(rng < 60 && rng > 50 && i < 10 && i > 5 && offset != 0)
                     {
@@ -199,12 +164,9 @@ public class Chunk extends Thread
                         }
                     }
                 }
-
-
                 GeneratingDone.set(true);
             }
         };
-
         thread.start();
     }
 
