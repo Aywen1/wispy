@@ -1,0 +1,105 @@
+= 🎮 SuperWispy
+
+Context : SuperWispy is a port of https://github.com/aiwen1/wispy[Wispy by Aywen] to Transcendance
+
+== 🎮 Credits :
+
+https://github.com/SomeBoringNerd[SomeBoringNerd : most of the modified code]
+
+https://github.com/Rubio-06[Rubio : Remade block textures]
+
+== ‍💻 Contribution guidelines
+
+This part describe the rules that your code should follow in order to be merged :
+
+[cols="~, ~"]
+|===
+
+| >Thou shalt never let print messages in the main loop
+| Print messages are expensive, and can cause massive amount of performances issue. It is fine to use them in dev environment, but remove them before making a commit
+
+| >Thy function shalt do one thing and do it well
+| Each function should do exactly what the name imply and nothing else. That dont mean it cant do other things, it just need to mostly do what it is supposed to.
+
+| >Thou shalt comment your code
+| At the very least, write a doxygen comment. You dont need to comment every single line, but it is recommanded to at least document the function. Even if the code document itself !
+
+| >Thou shall use @Getter and @Setter
+| This project use https://projectlombok.org[Project Lombok] to reduce boilerplate code, unless you need a custom setter / getter, use the annotations.
+
+| >Thou shall test thy code before commit
+| Not necessarily writting unit testing, just making sure your feature work as expected from a casual player perspective.
+
+| >Thou shall properly name variables and functions
+| self-explicit, dont write a variable named tmp and never explain why. If you use such name, at the very least write a comment explaining what it is used for.
+
+| >Thou shall put functions where thee belongeth
+| self-explicit, dont write a function that has no reason to be in that class. For exemple, we dont want functions to load textures in the class that manage global variables.
+
+| >Thou shall respect thee order
+| the structure of a class should always follow this : first your declared variables, followed by your constructor(s), followed by your void functions, then your other functions, and only after that, your abstract functions. And also, your functions should be grouped together depending on what they do
+
+| >Thy shalt not dependeth on AI
+| AI Generated code will be rejected. We copy-paste code from stackoverflow like the ancients, we reject your fancy AI "tools". We rely on good faith from contributors to follow this rule. Asking AI for help understanding a concept and some exemple code to go from is totally fine, just dont ask it to generate your entire codebase.
+
+|===
+
+=== 📃 Naming convention
+
+this project use a set of rules to name classes, variables, functions, and so on.
+
+[cols="~, ~"]
+|===
+
+| variables (public, private or static)
+| camelCase
+
+| constant variables (should always be public, final and static !)
+| SNAKE_CASE
+
+| void functions
+| CamelCase
+
+| non void functions
+| camelCase
+
+| Classes
+| CamelCase
+
+| Interfaces
+| ICamelCase
+
+| Packages
+| flatcase (and always one word !)
+
+|===
+
+== 📜 Context of Super-Wispy
+
+SuperWispy is a fork of Wispy, a 2d Minecraft clone made by Aiwen when he was little.
+
+This fork improve the code, the assets and add a few new features.
+
+== 📜 Context of Wispy
+**This software has an important backstory!** I coded it when I was very young, and I haven't made any changes to it since then. Because of this:
+
+- There could be errors or glitches.
+- The code might not be the best or the most efficient (little me has never taken a programming course).
+
+I decided to release this software as a part of a series on my YouTube channel https://www.youtube.com/@aywenvideos[Aywen] In the series, I explore and test the programs I coded during my childhood. The decision to release some of these programs is to give my community the chance to improve them and make them functional.
+
+If there are promising or functional versions of my software developed by the community, I'll be showcasing them in a video on my channel! 📽️
+
+== 🤝 Join the Development of Wispy
+
+**Fork First**: Before diving into development, make sure to fork the repository.
+
+Want to be part of this fun journey? Join my https://discord.gg/QjWsuaM3aB[Discord server]! Look for the "AYWEN-LOGICIELS" category and the "#vos-projets" channel therein. You can create a sub-channel for your project under it.
+
+== 📃 License
+
+Both Wispy and SuperWispy are released under the https://choosealicense.com/licenses/gpl-3.0/[GPL-3.0 license].
+
+'''
+
+Happy coding and gaming! 🎮👩‍💻

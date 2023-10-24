@@ -1,0 +1,14 @@
+{
+  "0": {
+    "0": "Hello World !",
+    "1": "Test 1",
+    "2": "A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A "
+  },
+  "1": {
+    "0": "Test second dialogue",
+    "1": "Test second dialogue, second text"
+  },
+  "2": {
+    "0": "Test loop text"
+  }
+}

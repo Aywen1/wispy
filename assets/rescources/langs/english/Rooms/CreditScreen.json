@@ -1,0 +1,14 @@
+{
+  "Title": "Credits à : ",
+  "SubTitle": "Ce jeu est rendu possible grâce à : ",
+
+  "peoples":
+  {
+    "0": "Personnes qui ont aidées d'une façon ou d'une autre :",
+    "1": "SomeBoringNerd : Lead dev / compositeur.e / level designer, contact pro : contact@someboringnerd.xyz",
+    "2": "Rubio : Assets comme les textures, contact pro : github.com/Rubio-06",
+    "3": "Maxime / Max_aucube : compère de d'appels discords tard la nuit, contact pro : +33 01 85 94 00 07 (ceci n'est pas un dox, c'est dans sa bio, appel non surtaxé)",
+    "4": "Aywen : a créé Wispy, le jeu sur lequel SuperWispy est basé, contact pro : aywen@blockmedia.fr",
+    "5": "----------------------------------"
+  }
+}

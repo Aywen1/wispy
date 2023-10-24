@@ -1,0 +1,19 @@
+{
+    "platform": "windows64",
+    "jdk": "build_rescources/jres/windows_jre.zip",
+    "executable": "GameLauncher",
+    "classpath": [
+        "desktop/build/libs/SuperWispy.jar"
+    ],
+    "removelibs": [
+    ],
+    "mainclass": "xyz.someboringnerd.game.DesktopLauncher",
+    "vmargs": [
+       "Xmx1G"
+    ],
+    "resources": [
+        "./audio"
+    ],
+    "minimizejre": "soft",
+    "output": "out-win"
+}
